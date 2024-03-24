@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="60; url=/tvtools/scroller.html">
+
+    <title>Scroller</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@200;300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        @-webkit-keyframes ticker {
+            0% {
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+                visibility: visible;
+            }
+            100% {
+                -webkit-transform: translate3d(-100%, 0, 0);
+                transform: translate3d(-100%, 0, 0);
+            }
+        }
+
+        @keyframes ticker {
+            0% {
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+                visibility: visible;
+            }
+            100% {
+                -webkit-transform: translate3d(-100%, 0, 0);
+                transform: translate3d(-100%, 0, 0);
+            }
+        }
+
+        .ticker-wrap {
+            position: fixed;
+            width: 100%;
+            overflow: hidden;
+            height: 4rem;
+            padding-left: 100%;
+            box-sizing: content-box;
+        }
+
+        .ticker-wrap .ticker {
+            height: 4rem;
+            line-height: 4rem;
+            white-space: nowrap;
+            padding-right: 100%;
+            box-sizing: content-box;
+            -webkit-animation-iteration-count: infinite;
+            animation-iteration-count: infinite;
+            -webkit-animation-timing-function: linear;
+            animation-timing-function: linear;
+            -webkit-animation-name: ticker;
+            animation-name: ticker;
+            -webkit-animation-duration: 60s;
+            animation-duration: 60s;
+        }
+
+        .ticker__item {
+            display: inline-block;
+            padding: 0 2rem;
+            font-size: 2rem;
+            color: white;
+        }
+
+        HTML, body {
+            padding-bottom: 5rem;
+            font-family: 'Roboto', sans-serif;
+            margin: 0px;
+            padding: 0px;
+            border: 0px;
+        }
+
+        h1, h2, p {
+            padding: 0 5%;
+        }
+
+        .clock {
+            float: right;
+            Height: 70px;
+            width: 15%;
+            font-size: 1.9rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .tick-body {
+            float: right;
+            Height: 70px;
+            width: 85%;
+            padding-top: 15px;
+            overflow: hidden;
+        }
+
+        .stock-ticker {
+            width: 100%;
+            height: 70px;
+            overflow: hidden;
+        }
+    </style>
+
+    <script>
+        let today = new Date();
+        setInterval(function () {
+            today = new Date();
+        }, 1000);
+
+        function startTime() {
+            const montharray = new Array("Jan", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ogu", "Sep", "Oct", "Nov", "Des");
+            let h = today.getHours() + 2;
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12;
+            let m = today.getMinutes();
+            let s = today.getSeconds();
+            h = checkTime(h);
+            m = checkTime(m);
+            s = checkTime(s);
+
+            document.getElementById('txt').innerHTML =
+                    checkTime(h + ":" + m + ":" + s + ampm);
+
+            setTimeout(startTime, 1000);
+        }
+
+        function checkTime(i) {
+            if (i < 10) {
+                i = "0" + i
+            }
+
+            return i;
+        }
+
+        function randNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1) ) + min;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            startTime();
+
+            document.querySelectorAll('.stonk').forEach(function(el) {
+                const isUp = randNumber(0, 1);
+                const randNum = randNumber(1, 100);
+
+                if (isUp === 1) {
+                    el.innerHTML = '<i style="color:rgba(21, 204, 0, 1); font-weight: bold" class="bi bi-caret-up-fill"></i> '+randNum+'%';
+                } else {
+                    el.innerHTML = '<i style="color:rgba(204, 0, 14, 1); font-weight: bold" class="bi bi-caret-down-fill"></i> '+randNum+'%';
+                }
+            });
+        });
+    </script>
+</head>
+
+<body translate="no">
+<div class="stock-ticker">
+    <div class="clock"><span id="txt"></span> EDT</div>
+    <div class="tick-body">
+        <marquee scrollamount=20>
+            <div class="ticker__item"><b>The WaterWolf Grand Stock Exchange (WGSE) -</b></div>
+            <div class="ticker__item"><span class="stonk"></span> Pets (PETS)</div>
+            <div class="ticker__item"><span class="stonk"></span> Boops (BOOP)</div>
+            <div class="ticker__item"><span class="stonk"></span> Proto Memory (PMEM)</div>
+            <div class="ticker__item"><span class="stonk"></span> Tails (TAIL)</div>
+            <div class="ticker__item"><span class="stonk"></span> Scales (SCALE)</div>
+            <div class="ticker__item"><span class="stonk"></span> Beans (BNZ)</div>
+            <div class="ticker__item"><span class="stonk"></span> Hooves (HOOF)</div>
+            <div class="ticker__item"><span class="stonk"></span> Fur (FUZ)</div>
+            <div class="ticker__item"><span class="stonk"></span> Sharks (SHRK)</div>
+            <div class="ticker__item"><span class="stonk"></span> ReX Traders (REX)</div>
+            <div class="ticker__item"><span class="stonk"></span> WaterWolf Media Group (WTWF)</div>
+            <div class="ticker__item"><span class="stonk"></span> WaterWolf Music BMG (WTMS)</div>
+            <div class="ticker__item"><span class="stonk"></span> Lume Juice (LUME)</div>
+            <div class="ticker__item"><span class="stonk"></span> Johari Juice (ORNG)</div>
+            <div class="ticker__item"><span class="stonk"></span> Yellow Dog Soda (YELDG)</div>
+            <div class="ticker__item"><span class="stonk"></span> Ponies (MLPX)</div>
+            <div class="ticker__item"><span class="stonk"></span> Wicker Stock (WIX)</div>
+            <div class="ticker__item"><span class="stonk"></span> The Larscis Foundation (LAR)</div>
+            <div class="ticker__item"><span class="stonk"></span> Taidum Chaos Energy (BNABX)</div>
+            <div class="ticker__item"><span class="stonk"></span> Bespoke Streaming Backend Services (ROXY)</div>
+            <div class="ticker__item"><span class="stonk"></span> Far Oval Trading Co. (FARO)</div>
+            <div class="ticker__item"><span class="stonk"></span> Chimera Network (CHNW)</div>
+            <div class="ticker__item"><span class="stonk"></span> Fast Forward Media Production and Entertainment Group,
+                Inc. (FFMPEG)
+            </div>
+            <div class="ticker__item"><span class="stonk"></span> Pammematth Anxiety (PMMA)</div>
+        </marquee>
+    </div>
+</div>
+
+<script src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-2c7831bb44f98c1391d6a4ffda0e1fd302503391ca806e7fcc7b9b87197aec26.js"></script>
+<script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+</body>
+</html>

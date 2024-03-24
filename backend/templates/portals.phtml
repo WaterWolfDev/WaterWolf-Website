@@ -1,0 +1,118 @@
+<?php
+
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ */
+$this->layout('layouts::site');
+?>
+
+<div class="container page">
+    <h1 class="section-title">Portals</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <h5 class="card-header">Connecting the Party Through a Portal</h5>
+                <div class="card-body">
+                    <div class="ratio ratio-16x9">
+                        <video id="videoPlayer" width="640" height="360" controls>
+                            <source src="/static/video/ANW_Dance3.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="buttons">
+                        <a href="<?= $router->urlFor('discord') ?>" class="btn btn-lg btn-primary">Join the
+                            Community</a>
+                        <a href="<?= $router->urlFor('discord') ?>" class="btn btn-lg btn-success">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-1">
+                <h5 class="card-header">Gallery</h5>
+                <div class="card-body">
+                    <div id="gallery" class="carousel slide">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="/static/img/portal/portal1.jpg" class="d-block w-100">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/img/portal/portal2.jpg" class="d-block w-100">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/img/portal/portal3.jpg" class="d-block w-100">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/img/portal/portal4.jpg" class="d-block w-100">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/img/portal/portal5.jpg" class="d-block w-100">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/img/portal/portal6.jpg" class="d-block w-100">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/img/portal/portal7.jpg" class="d-block w-100">
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#gallery"
+                                data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#gallery"
+                                data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <h5 class="card-header">About Our Portals</h5>
+                <div class="card-body">
+                    <img src="/static/img/con1.webp" class="img-fluid"/>
+
+                    <p>
+                        The WaterWolf team is passionate about bringing virtual spaces to life.
+                        We collaborate with event hosts to offer Virtual Reality portals connecting
+                        the virtual world with in-person events.
+                    </p>
+
+                    <p>
+                        If you're looking to host a VR portal at your event, let our skilled team
+                        of professionals build a powerful, custom experience. With our low-latency
+                        streaming technology and one-to-one recreations of event venues inside VRChat,
+                        our experiences are compelling for people on both sides of the portal, allowing
+                        your event to reach thousands of individuals who might not have had the
+                        opportunity to participate otherwise.
+                    </p>
+
+                    <p>
+                        Our team has hosted, or will host, portals at the following events:
+                    </p>
+                    <ul>
+                        <li>Everfree Northwest 2023</li>
+                        <li>Anthro Northwest 2024</li>
+                    </ul>
+
+                    <p>
+                        We also bring VR avatars to life with talented on-site VR dancers.
+                        Our team is volunteering, or has volunteered, at these events:
+                    </p>
+                    <ul>
+                        <li>Furry Weekend Atlanta 2023</li>
+                        <li>Everfree Northwest 2023</li>
+                        <li>Anthrocon 2023</li>
+                        <li>Biggest Little Fur Con 2023</li>
+                        <li>Anthro Northwest 2024</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

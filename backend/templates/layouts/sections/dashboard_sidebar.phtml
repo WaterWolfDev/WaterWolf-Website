@@ -1,0 +1,82 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var App\Entity\User $user
+ * @var bool $is_logged_in
+ */
+
+?>
+
+<nav id="sidebar" class="navdrawer offcanvas offcanvas-start" tabindex="-1">
+    <div class="navdrawer-header">
+        <h3><?= escapeHtml($user['username']) ?></h3>
+        <a href="<?= $router->urlFor('profile', ['user' => $user['username']]) ?>" target="_blank"
+           class="btn btn-primary btn-block">
+            View Public Profile
+        </a>
+    </div>
+
+    <div class="offcanvas-body">
+        <ul class="navdrawer-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $router->urlFor('dashboard:profile') ?>">
+                    <i class="bi-person-gear"></i> Edit My Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $router->urlFor('dashboard:password') ?>">
+                    <i class="bi-key-fill"></i> Change My Password
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $router->urlFor('dashboard:posters') ?>">
+                    <i class="bi-file-image-fill"></i> Poster Network
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $router->urlFor('dashboard:skills') ?>">
+                    <i class="bi-stars"></i> My Skills
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="<?= $router->urlFor('dashboard:dmx') ?>">
+                    <i class="bi-lightbulb-fill"></i> DMX Lights
+                </a>
+            </li>
+
+            <?php
+            if ($user->isMod()): ?>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= $router->urlFor('dashboard:short_urls') ?>">
+                        <i class="bi-link"></i> Short URLs
+                    </a>
+                </li>
+            <?php
+            endif; ?>
+
+            <?php
+            if ($user->isAdmin()): ?>
+                <li class="nav-item">
+                    <a data-bs-toggle="collapse" href="#dropdown-submenu" class="nav-link">
+                        <i class="bi-gear-fill"></i>
+                        Administration
+                    </a>
+                    <div id="dropdown-submenu" class="pb-2 collapse">
+                        <ul class="navdrawer-nav">
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= $router->urlFor('dashboard:admin:users') ?>">User
+                                    Management</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="<?= $router->urlFor('dashboard:admin:add_world') ?>">Add
+                                    VRChat World</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            <?php
+            endif; ?>
+        </ul>
+    </div>
+</nav>

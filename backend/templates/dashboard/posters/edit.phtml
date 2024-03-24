@@ -1,0 +1,151 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var bool $isEditMode
+ * @var array $row
+ * @var string|null $error
+ * @var array $types
+ * @var array $groups
+ */
+
+$this->layout('layouts::dashboard');
+?>
+
+<?= $this->fetch('common/breadcrumbs', [
+    'urls' => [
+        $router->urlFor('dashboard') => 'My Dashboard',
+        $router->urlFor('dashboard:posters') => 'Poster Network',
+    ],
+    'current' => ($isEditMode) ? 'Edit Poster' : 'Upload New Poster',
+]) ?>
+
+<h1>Poster Network</h1>
+
+<div class="card">
+    <h2 class="card-header">
+        <?php
+        if ($isEditMode): ?>
+            Edit Poster
+        <?php
+        else: ?>
+            Upload New Poster
+        <?php
+        endif; ?>
+    </h2>
+    <div class="card-body">
+        <?php
+        if ($error) : ?>
+            <div class="alert alert-danger">
+                <b>Error:</b> <?= escapeHtml($error) ?>
+            </div>
+        <?php
+        endif; ?>
+
+        <form method="post" action="" enctype="multipart/form-data">
+            <div class="row mb-2">
+                <div class="col-6">
+                    <div class="form-group mb-2">
+                        <?php
+                        if ($isEditMode): ?>
+                            <label class="form-label" for="fileToUpload">
+                                Replace Poster File:
+                            </label>
+                        <?php
+                        else: ?>
+                            <label class="form-label" for="fileToUpload">
+                                Select Poster File:
+                            </label>
+                        <?php
+                        endif; ?>
+                        <input class="form-control" type="file" name="fileToUpload" id="fileToUpload" accept="image/*">
+                        <?php
+                        if ($isEditMode): ?>
+                            <p class="form-text">
+                                To replace the existing poster, upload a new file here. Otherwise, leave this field
+                                blank.
+                            </p>
+                        <?php
+                        else: ?>
+                            <p class="form-text">
+                                Most image formats accepted.<br>
+                                The picture will be converted to a JPG and scaled and cropped to 590x1000.
+                            </p>
+                        <?php
+                        endif; ?>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label class="form-label" for="type">
+                            Poster Type:
+                        </label>
+                        <?= $this->fetch(
+                            'form/select',
+                            [
+                                'name' => 'type',
+                                'options' => [
+                                    '' => 'No Type',
+                                    ...$types,
+                                ],
+                                'selected' => $row['type_id'] ?? '',
+                            ]
+                        ) ?>
+                        <p class="form-text">
+                            Optionally specify the type of poster so worlds can choose whether to display it.
+                        </p>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label class="form-label" for="expires_at">
+                            Expires at:
+                        </label>
+                        <input class="form-control" type="datetime-local" name="expires_at" id="expires_at"
+                               value="<?= escapeHtmlAttribute($row['expires_at'] ?? '') ?>">
+                        <p class="form-text">
+                            Optionally set a time when the poster will automatically expire and won't be displayed.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="form-group mb-2">
+                        <label class="form-label" for="collection">
+                            Poster Collection:
+                        </label>
+                        <input type="text" class="form-control" id="collection" name="collection"
+                               value="<?= escapeHtmlAttribute($row['collection'] ?? '') ?>">
+                        <p class="form-text">
+                            Optionally specify the name of a collection that this poster is a part of. Multiple posters
+                            can be in a collection, and world builders can filter posters by the collection name.
+                        </p>
+                    </div>
+
+                    <?php
+                    if (!empty($groups)) : ?>
+                        <div class="form-group mb-2">
+                            <label class="form-label" for="group">
+                                Owning Group:
+                            </label>
+                            <?= $this->fetch(
+                                'form/select',
+                                [
+                                    'name' => 'group',
+                                    'options' => [
+                                        '' => 'No Group',
+                                        ...$groups,
+                                    ],
+                                    'selected' => $row['group_id'] ?? '',
+                                ]
+                            ) ?>
+                            <p class="form-text">
+                                Optionally upload this poster under a group so everyone in that group can manage it.
+                            </p>
+                        </div>
+                    <?php
+                    endif; ?>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-lg btn-primary">Save Changes</button>
+        </form>
+    </div>
+</div>

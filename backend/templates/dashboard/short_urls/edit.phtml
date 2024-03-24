@@ -1,0 +1,62 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var bool $isEditMode
+ * @var array $row
+ * @var string|null $error
+ */
+
+$this->layout('layouts::dashboard');
+?>
+
+<?= $this->fetch('common/breadcrumbs', [
+    'urls' => [
+        $router->urlFor('dashboard') => 'My Dashboard',
+        $router->urlFor('dashboard:short_urls') => 'Short URLs',
+    ],
+    'current' => ($isEditMode) ? 'Edit Short URL' : 'Create Short URL',
+]) ?>
+
+<h1>Short URLs</h1>
+
+<div class="card">
+    <h2 class="card-header">
+        <?php
+        if ($isEditMode): ?>
+            Edit Short URL
+        <?php
+        else: ?>
+            Create Short URL
+        <?php
+        endif; ?>
+    </h2>
+    <div class="card-body">
+        <form action="" method="POST">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="control-group">
+                        <label for="short_url" class="form-label">Shortened URL:</label>
+                        <input type="text" name="short_url" id="short_url"
+                               value="<?= escapeHtmlAttribute($row['short_url'] ?? '') ?>"
+                               class="form-control form-control-lg" required maxlength="128">
+                        <p class="form-text">The portion after the base URL (i.e. <code>foo</code> for
+                            <code>wtr.wf/foo</code>). Don't include a leading or trailing slash (/).</p>
+                    </div>
+                    <div class="control-group">
+                        <label for="long_url" class="form-label">Original URL:</label>
+                        <input type="text" name="long_url" id="long_url"
+                               value="<?= escapeHtmlAttribute($row['long_url'] ?? '') ?>"
+                               class="form-control form-control-lg" required maxlength="128">
+                        <p class="form-text">You can use a relative (i.e. <code>/dashboard</code>) or an absolute (i.e.
+                            <code>https://example.com</code>) URL.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons">
+                <button type="submit" class="btn btn-lg btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>

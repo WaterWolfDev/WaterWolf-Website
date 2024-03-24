@@ -1,0 +1,477 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var bool $isAdminMode
+ * @var array $profile
+ * @var array $groups
+ * @var array $userGroups
+ * @var string|null $error
+ */
+
+$this->layout('layouts::dashboard');
+
+if ($isAdminMode) {
+    echo $this->fetch('common/breadcrumbs', [
+        'urls' => [
+            $router->urlFor('dashboard') => 'My Dashboard',
+            $router->urlFor('dashboard:admin:users') => 'User Management',
+        ],
+        'current' => 'Edit User: ' . $profile['username'],
+    ]);
+} else {
+    echo $this->fetch('common/breadcrumbs', [
+        'urls' => [
+            $router->urlFor('dashboard') => 'My Dashboard',
+        ],
+        'current' => 'Edit My Profile',
+    ]);
+}
+?>
+
+<?php
+if ($isAdminMode) : ?>
+    <h1>Edit User: <?= escapeHtml($profile['username']) ?></h1>
+<?php
+else : ?>
+    <h1>Edit My Profile</h1>
+<?php
+endif; ?>
+
+<?php
+if ($error) : ?>
+    <div class="alert alert-danger">
+        <b>Error:</b> <?= escapeHtml($error) ?>
+    </div>
+<?php
+endif; ?>
+
+<form action="" method="POST">
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="tab"
+                            data-bs-target="#home" type="button"
+                            role="tab" aria-controls="home"
+                            aria-selected="true">Profile
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#djprofile" type="button"
+                            role="tab" aria-controls="djprofile">DJ Settings
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#profile" type="button"
+                            role="tab" aria-controls="profile">VRChat
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="tab"
+                            data-bs-target="#referral" type="button"
+                            role="tab" aria-controls="referral">Refer a Friend
+                    </button>
+                </li>
+                <?php
+                if ($isAdminMode) : ?>
+                    <li class="nav-item">
+                        <button class="nav-link" data-bs-toggle="tab"
+                                data-bs-target="#administration" type="button"
+                                role="tab" aria-controls="administration">Administration
+                        </button>
+                    </li>
+                <?php
+                endif; ?>
+
+                <div class="ms-auto">
+                    <button type="submit" name="update" value="ready" class="btn btn-success">Save Changes</button>
+                </div>
+            </ul>
+        </div>
+        <div class="card-body tab-content">
+            <!-- Profile Code -->
+            <div class="tab-pane fade active show" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="card bg-dark">
+                            <?php
+                            if ($isAdminMode) : ?>
+                                <img class="card-img-top" src="<?= avatarUrl($profile['user_img']) ?>" alt="Avatar">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <?= escapeHtml($profile['username']) ?>
+                                    </h5>
+                                </div>
+                            <?php
+                            else : ?>
+                                <a href="<?= $router->urlFor('dashboard:avatar') ?>">
+                                    <img class="card-img-top" src="<?= avatarUrl($profile['user_img']) ?>" alt="Avatar">
+                                </a>
+
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <?= escapeHtml($profile['username']) ?>
+                                    </h5>
+
+                                    <div class="d-grid g-2">
+                                        <a href="<?= $router->urlFor('dashboard:avatar') ?>"
+                                           class="btn btn-primary btn-block">
+                                            Upload new Avatar
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php
+                            endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="card bg-dark">
+                            <h4 class="card-header">Basic Details</h4>
+                            <div class="card-body">
+                                <div class="form-group mb-2">
+                                    <label class="form-label" for="username">Username:</label>
+                                    <input class="form-control" type="text"
+                                           id="username" name="username"
+                                           value="<?= escapeHtmlAttribute($profile['username']) ?>" required>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label class="form-label" for="email">E-mail Address:</label>
+                                    <input class="form-control" id="email" name="email" type="text"
+                                           value="<?= escapeHtmlAttribute($profile['email']) ?>" required>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label class="form-label">Pronouns:</label>
+                                    <input class="form-control" id="pronouns" name="pronouns" type="text"
+                                           maxlength="50" list="pronounOptions"
+                                           value="<?= escapeHtmlAttribute($profile['pronouns']) ?>">
+                                    <datalist id="pronounOptions">
+                                        <?= $this->fetch('common/pronouns') ?>
+                                    </datalist>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="aboutme">About Me:</label>
+                                    <?php
+                                    /* WARNING: Do not add any tabs/spaces to the line below. */ ?>
+                                    <textarea class="form-control" id="aboutme" name="aboutme"
+                                              rows="3"><?= escapeHtml($profile['aboutme']) ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <?php
+                        if ($profile['is_team'] === 1) : ?>
+                            <div class="card bg-dark mb-3">
+                                <h4 class="card-header">Team Profile</h4>
+                                <div class="card-body">
+                                    <div class="form-group mb-2">
+                                        <label class="form-label" for="title">Title:</label>
+                                        <input class="form-control" type="text"
+                                               id="title" name="title"
+                                               value="<?= escapeHtmlAttribute($profile['title']) ?>">
+                                    </div>
+                                </div>
+                            </div>
+                        <?php
+                        endif; ?>
+
+                        <div class="card bg-dark">
+                            <h4 class="card-header">Social Media</h4>
+                            <div class="card-body">
+                                <div class="form-group mb-2">
+                                    <label class="form-label" for="discord">Discord:</label>
+                                    <input class="form-control" id="discord" name="discord" type="text"
+                                           maxlength="24"
+                                           value="<?= escapeHtmlAttribute($profile['discord']) ?>">
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label class="form-label" for="twitch">Twitch:</label>
+                                    <input class="form-control" id="twitch" name="twitch" type="text"
+                                           maxlength="24"
+                                           value="<?= escapeHtmlAttribute($profile['twitch']) ?>">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="website">Website:</label>
+                                    <input class="form-control" id="website" name="website" type="text"
+                                           maxlength="255"
+                                           value="<?= escapeHtmlAttribute($profile['website']) ?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Profile Code -->
+
+            <!-- DJ Profile Code -->
+            <div class="tab-pane fade" id="djprofile" role="tabpanel" aria-labelledby="djprofile-tab">
+                <div class="row">
+                    <div class="col-lg-2">
+                        <div class="card bg-dark">
+                            <h4 class="card-header">DJ Avatar</h4>
+                            <?php
+                            if ($isAdminMode) : ?>
+                                <img class="img-fluid"
+                                     src="<?= djAvatarUrl($profile['dj_img'], $profile['user_img']) ?>" alt="DJ Avatar">
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <?= escapeHtml($profile['username']) ?>
+                                    </h5>
+                                </div>
+                            <?php
+                            else : ?>
+                                <a href="<?= $router->urlFor('dashboard:avatar', ['type' => 'dj']) ?>">
+                                    <img class="img-fluid"
+                                         src="<?= djAvatarUrl($profile['dj_img'], $profile['user_img']) ?>"
+                                         alt="DJ Avatar">
+                                </a>
+
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        <?= escapeHtml($profile['username']) ?>
+                                    </h5>
+
+                                    <p class="card-text form-text">
+                                        Your DJ avatar is your regular user avatar unless you upload a custom DJ one.
+                                    </p>
+
+                                    <div class="d-grid g-2">
+                                        <a href="<?= $router->urlFor('dashboard:avatar', ['type' => 'dj']) ?>"
+                                           class="btn btn-primary btn-block">
+                                            Upload new DJ Avatar
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php
+                            endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-10">
+                        <div class="card bg-dark">
+                            <h4 class="card-header">DJ Profile Info</h4>
+                            <div class="card-body">
+                                <div class="form-group mb-2">
+                                    <label class="form-label" for="dj_name">DJ Stage Name:</label>
+                                    <input class="form-control" type="text" id="dj_name" name="dj_name"
+                                           maxlength="150"
+                                           value="<?= escapeHtmlAttribute($profile['dj_name']) ?>">
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <label class="form-label" for="vrcdn">VRCDN Link:</label>
+                                    <input class="form-control" id="vrcdn" name="vrcdn" type="text"
+                                           value="<?= escapeHtmlAttribute($profile['vrcdn']) ?>">
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="dj_genre">Favorite Playing Genre:</label>
+                                    <input class="form-control" id="dj_genre" name="dj_genre" type="text"
+                                           maxlength="50" list="genreOptions"
+                                           value="<?= escapeHtmlAttribute($profile['dj_genre']) ?>">
+                                    <datalist id="genreOptions">
+                                        <?= $this->fetch('common/genres') ?>
+                                    </datalist>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- DJ Profile Code -->
+
+            <!-- Referral Code -->
+            <div class="tab-pane fade" id="referral" role="tabpanel" aria-labelledby="referral-tab">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card bg-dark">
+                            <h4 class="card-header">Referral Roster</h4>
+                            <div class="card-body">
+                                The referred friend list is currently in development.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="card bg-dark">
+                            <h4 class="card-header">Referral Link</h4>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Referral Link</label>
+                                    <input class="form-control input-md" type="text"
+                                           value="https://waterwolf.club/register?ref=<?= escapeHtmlAttribute(
+                                               $profile['username']
+                                           ) ?>"
+                                           readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Referral Code -->
+
+            <!-- VRC Code -->
+            <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="row">
+                    <div class="col-lg-4">
+                        <div class="card bg-dark">
+                            <h4 class="card-header">VRChat Settings</h4>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label" for="vrchat">VRChat Username:</label>
+                                    <input class="form-control" id="vrchat" name="vrchat" type="text"
+                                           maxlength="24"
+                                           value="<?= escapeHtmlAttribute($profile['vrchat']) ?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-8">
+
+                    </div>
+                </div>
+            </div>
+            <!-- Overview Code -->
+
+            <?php
+            if ($isAdminMode) : ?>
+                <!-- Administration Tab -->
+                <div class="tab-pane fade" id="administration" role="tabpanel" aria-labelledby="administration-tab">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card bg-dark">
+                                <h4 class="card-header">User Flags</h4>
+                                <div class="card-body">
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               name="is_dj" id="is_dj"
+                                               <?php
+                                               if ($profile['is_dj'] === 1) :
+                                               ?>checked="checked"<?php
+                                        endif; ?>>
+                                        <label class="form-check-label" for="is_dj">
+                                            User is a DJ
+                                        </label>
+                                    </div>
+                                    <hr>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               name="is_team" id="is_team"
+                                               <?php
+                                               if ($profile['is_team'] === 1) :
+                                               ?>checked="checked"<?php
+                                        endif; ?>>
+                                        <label class="form-check-label" for="is_team">
+                                            User is a Team Member
+                                        </label>
+                                        <p class="form-text">Lists user on the "Team" page.</p>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               name="is_mod" id="is_mod"
+                                               <?php
+                                               if ($profile['is_mod'] === 1) :
+                                               ?>checked="checked"<?php
+                                        endif; ?>>
+                                        <label class="form-check-label" for="is_mod">
+                                            User is a Moderator
+                                        </label>
+                                        <p class="form-text">Grants content moderation permissions.</p>
+                                    </div>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               name="is_admin" id="is_admin"
+                                               <?php
+                                               if ($profile['is_admin'] === 1) :
+                                               ?>checked="checked"<?php
+                                        endif; ?>>
+                                        <label class="form-check-label" for="is_admin">
+                                            User is a System Administrator
+                                        </label>
+                                        <p class="form-text">Grants full admin permissions.</p>
+                                    </div>
+                                    <hr>
+                                    <div class="form-check form-switch mb-2">
+                                        <input class="form-check-input" type="checkbox" value="1"
+                                               name="banned" id="banned"
+                                               <?php
+                                               if ($profile['banned'] === 1) :
+                                               ?>checked="checked"<?php
+                                        endif; ?>>
+                                        <label class="form-check-label text-danger-emphasis" for="banned">
+                                            User is Banned
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card bg-dark mb-3">
+                                <h4 class="card-header">Group Membership</h4>
+                                <div class="card-body">
+                                    <?php
+                                    foreach ($groups as $groupId => $groupName) : ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="groups[]"
+                                                   value="<?= escapeHtmlAttribute($groupId) ?>"
+                                                   id="group_<?= escapeHtmlAttribute($groupId) ?>"
+                                                   <?php
+                                                   if (isset($userGroups[$groupId])) :
+                                                   ?>checked<?php
+                                            endif; ?>>
+                                            <label class="form-check-label"
+                                                   for="group_<?= escapeHtmlAttribute($groupId) ?>">
+                                                <?= escapeHtml($groupName) ?>
+                                            </label>
+                                        </div>
+                                    <?php
+                                    endforeach; ?>
+                                </div>
+                            </div>
+
+                            <div class="card bg-dark">
+                                <h4 class="card-header">User Details</h4>
+                                <div class="card-body">
+                                    <dl class="row">
+                                        <dt class="col-4">Registered on:</dt>
+                                        <dd class="col-8"><?= escapeHtml(humanTime($profile['reg_date'])) ?></dd>
+
+                                        <dt class="col-4">Country of Origin:</dt>
+                                        <dd class="col-8"><?= escapeHtml($profile['country']) ?></dd>
+
+                                        <dt class="col-4">Last Active:</dt>
+                                        <dd class="col-8"><?= escapeHtml(timeAgo($profile['lastactive'])) ?></dd>
+
+                                        <dt class="col-4">Last Login:</dt>
+                                        <dd class="col-8"><?= escapeHtml(timeAgo($profile['last_login'])) ?></dd>
+
+                                        <dt class="col-4">Last Logged In IP:</dt>
+                                        <dd class="col-8"><?= escapeHtml($profile['lastip']) ?></dd>
+
+                                        <dt class="col-4">Successful Logins:</dt>
+                                        <dd class="col-8"><?= escapeHtml($profile['goodpass']) ?></dd>
+
+                                        <dt class="col-4">Unsuccessful Logins:</dt>
+                                        <dd class="col-8"><?= escapeHtml($profile['badpass']) ?></dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Administration Tab -->
+            <?php
+            endif; ?>
+        </div>
+    </div>
+</form>

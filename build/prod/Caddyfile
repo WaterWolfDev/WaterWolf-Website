@@ -1,0 +1,13 @@
+:8080 {
+    root * /var/app/www/web
+
+    encode gzip
+    php_fastcgi 127.0.0.1:9000
+    file_server
+    
+    header /static/dist/* Cache-Control max-age=5184000
+
+    log {
+        output stdout
+    }
+}

@@ -1,0 +1,46 @@
+<?php
+/** @var League\Plates\Template\Template $this */
+
+$this->fetch('common/frontend_assets', [
+    'component' => 'frontend/layout.js',
+])
+?>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <?php
+    require(__DIR__ . '/sections/header.phtml'); ?>
+</head>
+
+<body>
+<?php
+require(__DIR__ . '/sections/nav.phtml'); ?>
+
+<!-- Sidebar -->
+<?php
+require(__DIR__ . '/sections/dashboard_sidebar.phtml'); ?>
+
+<!-- Page Content  -->
+<main id="main" class="has-sidebar">
+    <div class="container-fluid page">
+        <div class="d-block d-lg-none mb-3">
+            <button id="navbar-toggle" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+                    aria-controls="sidebar" aria-expanded="false"
+                    class="btn btn-secondary">
+                Toggle Sidebar
+            </button>
+        </div>
+
+        <?= $this->section('content') ?>
+    </div>
+</main>
+
+<footer id="footer" class="has-sidebar mt-3">
+    <?php
+    require(__DIR__ . '/sections/footer.phtml'); ?>
+</footer>
+
+<?php
+require(__DIR__ . '/sections/notifications.phtml'); ?>
+</body>
+</html>

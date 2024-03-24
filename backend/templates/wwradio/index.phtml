@@ -1,0 +1,41 @@
+<?php
+/** @var League\Plates\Template\Template $this */
+
+$this->layout('layouts::wwradio');
+?>
+<div class="dr-container dr-normal">
+    <div class="logo">
+        <img src="/static/wwradio/ww-radio.png"/>
+    </div>
+    <div class="now-playing-box">
+        <p class="np">Now Playing</p><br>
+        <p id="np-artist"></p><br>
+        <p id="np-title"></p>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="player">
+        <video id="player-itself" controls muted autoplay="autoplay" name="media">
+            <source src="https://techsane.radioca.st/stream?type=http&nocache=6" type="audio/mpeg">
+        </video>
+    </div>
+
+    <!-- END PLAYER -->
+    <div class="right-of-button">
+        <div class="background-box"></div>
+        <div class="album-art" id="np-album-art-box"></div>
+        <div class="art-shadow"></div>
+    </div>
+
+    <div class="cc_recenttracks_list" data-username="techsane">Loading ...</div>
+
+    <script src="https://quasar.shoutca.st:2199/system/recenttracks.js"></script>
+    <script src="https://quasar.shoutca.st:2199/system/request.js"></script>
+</div>
+<div id="cc_req_result_mvinaround"></div>
+
+<script>
+    ready(function () {
+        startPlayerLoop();
+    });
+</script>

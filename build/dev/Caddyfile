@@ -1,0 +1,21 @@
+{
+	servers {
+	    trusted_proxies static 172.17.0.0/16
+	}
+}
+
+:8080 {
+    root * /var/app/www/web
+
+    encode gzip
+    php_fastcgi 127.0.0.1:9000
+    file_server
+
+    route /static/dist/* {
+        reverse_proxy * 127.0.0.1:5173
+    }
+
+    log {
+        output stdout
+    }
+}

@@ -1,0 +1,8 @@
+User-agent: *
+Crawl-delay: 5
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /forgot
+Disallow: /recover
+

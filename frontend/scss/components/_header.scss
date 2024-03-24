@@ -1,0 +1,54 @@
+header .navbar {
+  min-height: $header-nav-height;
+
+  background-color: #006CA2 !important;
+
+  font-weight: bold;
+  text-shadow: 1px 1px #000;
+  box-shadow: 2px 2px rgba(0, 0, 0, 0.1);
+
+  .nav-link,
+  .btn {
+    white-space: nowrap;
+  }
+
+  i {
+    padding-right: 0.25rem;
+  }
+
+  @include media-breakpoint-up(lg) {
+    background-image: url('/static/img/header_left.png'), url('/static/img/header_right.png');
+    background-position: left bottom, right bottom;
+    background-repeat: no-repeat, no-repeat;
+
+    .navbar-brand {
+      padding-right: 3rem;
+    }
+  }
+
+  @include media-breakpoint-only(xl) {
+    & {
+      --bs-nav-link-font-size: .9rem;
+
+      .btn {
+        --bs-btn-font-size: .9rem;
+      }
+    }
+  }
+
+  @include media-breakpoint-only(lg) {
+    & {
+      --bs-nav-link-font-size: .8rem;
+
+      .btn {
+        --bs-btn-font-size: .8rem;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    & {
+      position: relative;
+    }
+  }
+}

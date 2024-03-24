@@ -1,0 +1,28 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var string $comment_id
+ * @var App\Entity\User|null $user
+ * @var bool $is_logged_in
+ */
+
+$props = [
+    'location' => $comment_id,
+    'isLoggedIn' => $is_logged_in,
+    'isMod' => ($is_logged_in && $user?->isMod()),
+];
+?>
+
+<?= $this->fetch('common/frontend_assets', [
+    'component' => 'frontend/vue/comments.js',
+]) ?>
+
+<div id="vue_comments">&nbsp;</div>
+
+<script>
+    ready(() => {
+        vueComponentComments('#vue_comments', <?=json_encode($props, JSON_THROW_ON_ERROR) ?>);
+    })
+</script>
+
+

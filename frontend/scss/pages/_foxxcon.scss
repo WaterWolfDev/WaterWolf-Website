@@ -1,0 +1,126 @@
+.fxcn {
+  #header-video {
+    position: fixed;
+    z-index: -10;
+    object-fit: cover;
+    width: 100%;
+    height: 100vh;
+  }
+
+  .cuntdown {
+    font-size: 1.3em;
+    width: 100vw;
+    margin-left: 0px;
+    color: white;
+    font-family: 'Noto Sans', sans-serif;
+    text-align: center;
+    animation-name: fadeup;
+    animation-duration: 2s;
+    animation-delay: 3s;
+    animation-fill-mode: backwards;
+
+    .numbers {
+      font-weight: 700;
+      font-size: 3.2em;
+
+    }
+  }
+
+  @keyframes fadeup {
+    from {
+      opacity: 0
+    }
+    to {
+      opacity: 1
+    }
+  }
+
+  .fxcn-logo {
+    width: 50vw;
+    margin-left: 25vw;
+    animation-name: fadeup;
+    animation-duration: 1s;
+    animation-delay: 0s;
+    animation-fill-mode: backwards;
+
+    .f {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 0.4s;
+      animation-fill-mode: backwards;
+    }
+
+    .o {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 0.7s;
+      animation-fill-mode: backwards;
+    }
+
+    .x {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 1s;
+      animation-fill-mode: backwards;
+    }
+
+    .x2 {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 1.3s;
+      animation-fill-mode: backwards;
+    }
+
+    .c {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 1.6s;
+      animation-fill-mode: backwards;
+    }
+
+    .o2 {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 1.9s;
+      animation-fill-mode: backwards;
+    }
+
+    .n {
+      animation-name: fadeup;
+      animation-duration: 1s;
+      animation-delay: 2.1s;
+      animation-fill-mode: backwards;
+    }
+  }
+
+  .fxcn-cyberpunk {
+    width: 70vw;
+    margin-left: 15vw;
+    animation-name: fadeup;
+    animation-duration: 2s;
+    animation-delay: 2.8s;
+    animation-fill-mode: backwards;
+
+  }
+
+  .fxcn-buttons {
+    animation-name: fadeup;
+    animation-duration: 2s;
+    animation-delay: 3.5s;
+    animation-fill-mode: backwards;
+    margin-bottom: 20vh;
+
+    a {
+      background-color: rgba(0, 127, 255, 0.5);
+      border: solid 2px rgb(0, 200, 255);
+      box-shadow: inset 0px 0px 10px rgba(0, 200, 255, 0.6);
+    }
+
+    text-align: center;
+
+  }
+
+  .content {
+    z-index: 69420;
+  }
+}

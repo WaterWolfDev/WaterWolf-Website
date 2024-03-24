@@ -1,0 +1,120 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var array $worlds
+ */
+
+$this->layout('layouts::site');
+?>
+
+<div class="container page">
+    <div class="d-flex mb-3 align-items-center">
+        <div class="flex-fill">
+            <h1 class="section-title">World Spotlight</h1>
+        </div>
+        <div class="flex-shrink-0">
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <button class="nav-link active" id="tab-grid-view"
+                            data-bs-toggle="tab" data-bs-target="#grid-view"
+                            type="button" role="tab" aria-controls="grid-view"
+                            aria-selected="true">
+                        Grid View
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="tab-list-view"
+                            data-bs-toggle="tab" data-bs-target="#list-view"
+                            type="button" role="tab" aria-controls="list-view"
+                            aria-selected="false">
+                        List View
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div
+        class="alert alert-info d-flex flex-md-row flex-column align-items-center my-2"
+        role="alert"
+        aria-live="off"
+    >
+        <div class="flex-shrink-0 me-3">
+            <i class="bi-info-circle" style="font-size: 2rem;" aria-hidden="true"></i>
+        </div>
+        <div class="flex-fill">
+            On this page, you will find a repository of worlds, both those made by our own
+            WaterWolf-associated creators, and those that we have discovered on our journey into VRChat and have
+            immensely enjoyed.
+        </div>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="grid-view" role="tabpanel" aria-labelledby="tab-grid-view"
+             tabindex="0">
+            <div id="products" class="row view-group">
+                <?php
+                foreach ($worlds as $row) : ?>
+                    <div class="item col-xs-4 col-lg-4">
+                        <div class="thumbnail card mb-4">
+                            <div class="img-event">
+                                <a href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
+                                    <img class="card-img-top"
+                                         src="<?= mediaUrl($row['image']) ?>" loading="lazy"/>
+                                </a>
+                            </div>
+                            <div class="caption card-body">
+                                <h4 class="card-title m-0">
+                                    <?= escapeHtml($row['title']) ?>
+                                </h4>
+
+                                <div><small><?= escapeHtml($row['hits']) ?> Views</small></div>
+
+                                <div class="d-grid gap-2 mt-2">
+                                    <a class="btn btn-success"
+                                       href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
+                                        View World
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php
+                endforeach; ?>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="list-view" role="tabpanel" aria-labelledby="tab-list-view" tabindex="0">
+            <div class="card">
+                <div class="card-body">
+                    <?php
+                    foreach ($worlds as $row) : ?>
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="flex-shrink-0">
+                                <a href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
+                                    <img class="img-fluid" src="<?= mediaUrl($row['image']) ?>" loading="lazy"
+                                         style="max-width: 100px;"/>
+                                </a>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h4 class="card-title m-0">
+                                    <?= escapeHtml($row['title']) ?>
+                                </h4>
+
+                                <div><small><?= escapeHtml($row['hits']) ?> Views</small></div>
+                            </div>
+                            <div class="flex-shrink-1">
+                                <a class="btn btn-success"
+                                   href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
+                                    View World
+                                </a>
+                            </div>
+                        </div>
+                        <hr>
+                    <?php
+                    endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

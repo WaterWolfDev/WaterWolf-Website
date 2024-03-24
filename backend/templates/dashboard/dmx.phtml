@@ -1,0 +1,296 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var bool $isTeam
+ * @var array|null $editRow
+ * @var array $fixtures
+ * @var array $rigLookup
+ * @var string|null $selectedRigName
+ */
+
+$this->layout('layouts::dashboard');
+?>
+
+<?= $this->fetch('common/breadcrumbs', [
+    'urls' => [
+        $router->urlFor('dashboard') => 'My Dashboard',
+    ],
+    'current' => 'DMX Lights',
+]) ?>
+
+<h1>DMX Lights</h1>
+
+<?php
+if ($isTeam): ?>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddFixture">
+        Add Fixture
+    </button>
+<?php
+else: ?>
+    <div class="alert alert-primary" role="alert">
+        Only WaterWolf Crew are Allowed to Modify Rigs.
+    </div>
+<?php
+endif; ?>
+
+<!-- Modal -->
+<div class="modal fade" id="AddFixture">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add DMX Fixture</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <form method="POST" class="form-group">
+                    <label for="fixture_name">Fixture Name:</label>
+                    <div class="form-group">
+                        <select name="fixture_name" class="form-control">
+                            <option value="SpotLight">SpotLight (13CH)</option>
+                            <option value="WashLight">WashLight (13CH)</option>
+                            <option value="Blinder">Blinder (5CH)</option>
+                            <option value="Flasher">Flasher (1CH)</option>
+                            <option value="ParLight">ParLight (5CH)</option>
+                            <option value="LightBar">LightBar (5CH)</option>
+                            <option value="DiscoBall">DiscoBall (1CH)</option>
+                            <option value="Laser">Laser (13CH)</option>
+                            <option value="6x4Light">6x4 Light (5CH)</option>
+                            <option value="MultiLightbar">MultiLightbar (15CH)</option>
+                            <option disabled> --</option>
+                            <option value="TS_SpotLight">TS SpotLight (13CH)</option>
+                            <option value="TS_SpotLight">TS Mover (13CH)</option>
+                            <option value="TS_Washer">TS Flood (5CH)</option>
+                            <option value="TS_SpotLight">TS Portman (5CH)</option>
+                            <option value="TS_SpotLight">TS Laser (30CH)</option>
+                        </select>
+                    </div>
+
+
+                    <label for="universe_number">Universe Number:</label>
+                    <input type="range" name="universe_number" class="custom-range" min="1" max="4" step="1"
+                           id="slider2" value="0">
+                    <small id="slider2Helper" class="form-text text-muted">Universe: <span
+                            id="sliderValue2">1</span></small>
+
+                    <div class="row">
+                        <div class="col-7">
+                            <label for="channel_number">Channel Number:</label>
+                            <input type="range" class="custom-range" name="channel_number" min="1" max="255"
+                                   step="1" id="slider1" value="0">
+                            <small id="sliderHelper" class="form-text text-muted">Channel: <span
+                                    id="sliderValue1">1</span></small>
+                        </div>
+                        <div class="col-5">
+                            <div>
+                                <button id="btnAdd1" type="button" class="btn btn-primary btn-sm">1</button>
+                                <button id="btnAdd5" type="button" class="btn btn-primary btn-sm">5</button>
+                                <button id="btnAdd13" type="button" class="btn btn-primary btn-sm">13</button>
+                                <button id="btnAdd15" type="button" class="btn btn-primary btn-sm">15</button>
+                                <br>
+                                <button id="btnSub1" type="button" class="btn btn-danger btn-sm">1</button>
+                                <button id="btnSub5" type="button" class="btn btn-danger btn-sm">5</button>
+                                <button id="btnSub13" type="button" class="btn btn-danger btn-sm">13</button>
+                                <button id="btnSub15" type="button" class="btn btn-danger btn-sm">15</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label for="rig_name">Rig Name:</label>
+                    <input type="text" name="rig_name" class="form-control" id="rig_name" autocomplete="off"
+                           required>
+                    <div id="suggestion-box"></div>
+                    <input type="submit" name="add_fixture" value="Add Fixture" class="btn btn-primary mt-3">
+                </form>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<form method="GET" class="form-group">
+    <label for="rig_name">Select Rig Name:</label>
+    <select name="rig_name" class="form-control">
+        <?php
+        foreach ($rigLookup as $rigName) {
+            echo '<option value="' . escapeHtmlAttribute($rigName) . '"';
+            if ($selectedRigName === $rigName) {
+                echo ' selected';
+            }
+            echo '>' . escapeHtml($rigName) . '</option>';
+        }
+        ?>
+    </select>
+    <input type="submit" value="Show" class="btn btn-primary mt-3">
+</form>
+
+<?php
+if ($editRow) : ?>
+    <form method="POST" class="form-group">
+        <input type="hidden" name="update_id" value="<?= escapeHtmlAttribute($editRow['id']) ?>">
+
+        <label for="update_fixture_name">Fixture Name:</label>
+        <input type="text" name="update_fixture_name"
+               value="<?= escapeHtmlAttribute($editRow['fixture_name']) ?>"
+               class="form-control"
+               required>
+
+        <label for="update_universe_number">Universe Number:</label>
+        <input type="number" name="update_universe_number"
+               value="<?= escapeHtmlAttribute($editRow['universe_number']) ?>"
+               class="form-control" required>
+
+        <label for="update_channel_number">Channel Number:</label>
+        <input type="number" name="update_channel_number"
+               value="<?= escapeHtmlAttribute($editRow['channel_number']) ?>"
+               class="form-control" required>
+
+        <label for="update_rig_name">Rig Name:</label>
+        <input type="text" name="update_rig_name" value="<?= escapeHtmlAttribute($editRow['rig_name']) ?>"
+               class="form-control" required>
+        <input type="submit" value="Update" class="btn btn-primary mt-3">
+    </form>
+<?php
+endif; ?>
+
+<table class="table table-dark">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Fixture Name</th>
+        <th>Universe Number</th>
+        <th>Channel Number</th>
+        <th>Rig Name</th>
+        <?php
+        if ($isTeam) { ?>
+            <th>Actions</th><?php
+        } ?>
+    </tr>
+    </thead>
+    <tbody>
+    <?php
+    foreach ($fixtures as $row) { ?>
+        <tr>
+            <td><?= escapeHtml($row['id']) ?></td>
+            <td><?= escapeHtml($row['fixture_name']) ?></td>
+            <td><?= escapeHtml($row['universe_number']) ?></td>
+            <td><?= escapeHtml($row['channel_number']) ?></td>
+            <td><?= escapeHtml($row['rig_name']) ?></td>
+            <?php
+            if ($isTeam) { ?>
+                <td>
+                    <form method="POST">
+                        <input type="hidden" name="delete_id" value="<?= escapeHtmlAttribute($row['id']) ?>">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <form method="POST">
+                        <input type="hidden" name="edit_id" value="<?= escapeHtmlAttribute($row['id']) ?>">
+                        <button type="submit" class="btn btn-warning">Edit</button>
+                    </form>
+                </td>
+                <?php
+            } ?>
+        </tr>
+        <?php
+    } ?>
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const slider1 = document.getElementById('slider1');
+        const sliderValue1 = document.getElementById('sliderValue1');
+        const slider2 = document.getElementById('slider2');
+        const sliderValue2 = document.getElementById('sliderValue2');
+
+        // Event listener for Slider 1 (Channel)
+        slider1.addEventListener('input', function () {
+            sliderValue1.textContent = slider1.value;
+        });
+
+        // Event listener for Slider 2 (Universe)
+        slider2.addEventListener('input', function () {
+            sliderValue2.textContent = slider2.value;
+        });
+
+        // Event listeners for increment buttons
+        document.getElementById('btnAdd1').addEventListener('click', function () {
+            updateSlider(slider1, 1);
+        });
+
+        document.getElementById('btnAdd5').addEventListener('click', function () {
+            updateSlider(slider1, 5);
+        });
+
+        document.getElementById('btnAdd13').addEventListener('click', function () {
+            updateSlider(slider1, 13);
+        });
+
+        document.getElementById('btnAdd15').addEventListener('click', function () {
+            updateSlider(slider1, 15);
+        });
+
+        // Event listeners for decrement buttons
+        document.getElementById('btnSub1').addEventListener('click', function () {
+            updateSlider(slider1, -1);
+        });
+
+        document.getElementById('btnSub5').addEventListener('click', function () {
+            updateSlider(slider1, -5);
+        });
+
+        document.getElementById('btnSub13').addEventListener('click', function () {
+            updateSlider(slider1, -13);
+        });
+
+        document.getElementById('btnSub15').addEventListener('click', function () {
+            updateSlider(slider1, -15);
+        });
+
+        // Function to update the slider
+        function updateSlider(slider, increment) {
+            let newValue = parseInt(slider.value, 10) + increment;
+
+            // Make sure the new value is within the slider's range
+            if (newValue >= parseInt(slider.min, 10) && newValue <= parseInt(slider.max, 10)) {
+                slider.value = newValue;
+                slider.dispatchEvent(new Event('input'));  // Trigger the 'input' event to update display
+            }
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const rigNameInput = document.getElementById("rig_name");
+        const suggestionBox = document.getElementById("suggestion-box");
+
+        rigNameInput.addEventListener("input", async function () {
+            const query = rigNameInput.value;
+            if (query.length === 0) {
+                suggestionBox.innerHTML = '';
+                suggestionBox.style.display = 'none';
+                return;
+            }
+
+            const response = await fetch(`/tools/dmx_rig_suggest.php?query=${query}`);
+            const suggestions = await response.json();
+
+            suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
+            suggestionBox.style.display = 'block';
+        });
+    });
+
+    function selectSuggestion(value) {
+        document.getElementById("rig_name").value = value;
+        document.getElementById("suggestion-box").innerHTML = '';
+        document.getElementById("suggestion-box").style.display = 'none';
+    }
+</script>

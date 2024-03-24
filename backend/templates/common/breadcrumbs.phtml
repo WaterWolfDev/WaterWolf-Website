@@ -1,0 +1,21 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var array $urls
+ * @var string $current
+ */
+
+?>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <?php
+        foreach ($urls as $url => $urlName): ?>
+            <li class="breadcrumb-item">
+                <a href="<?= $url ?>"><?= escapeHtml($urlName) ?></a>
+            </li>
+        <?php
+        endforeach; ?>
+        <li class="breadcrumb-item active" aria-current="page"><?= escapeHtml($current) ?></li>
+    </ol>
+</nav>

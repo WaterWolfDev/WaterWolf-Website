@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="WaterWolf">
+    <description>The WaterWolf PHP coding standard.</description>
+
+    <file>backend</file>
+    <file>web</file>
+
+    <arg name="basepath" value="."/>
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+
+    <!-- relative path from PHPCS source location -->
+    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+
+    <rule ref="PSR12">
+        <exclude name="PSR1.Files.SideEffects" />
+    </rule>
+
+    <rule ref="Generic.Files.LineLength">
+        <exclude name="Generic.Files.LineLength" />
+    </rule>
+
+    <rule ref="Internal.NoCodeFound">
+        <severity>0</severity>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification">
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingTraversableTypeHintSpecification"/>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Arrays.TrailingArrayComma"/>
+</ruleset>

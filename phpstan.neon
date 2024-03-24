@@ -1,0 +1,17 @@
+parameters:
+    level: 6
+
+    paths:
+        - backend
+        - web
+
+    fileExtensions:
+        - php
+        - phtml
+
+    dynamicConstantNames:
+        - GLOBAL_URL
+        - GLOBAL_SITECODE
+        - GLOBAL_URI_WITHOUT_QUERY
+
+    checkMissingIterableValueType: false

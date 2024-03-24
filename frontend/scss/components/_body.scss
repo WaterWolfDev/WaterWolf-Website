@@ -1,0 +1,26 @@
+body {
+  background-image: url('/static/img/awoo.webp');
+  background-attachment: fixed;
+  background-size: contain;
+  background-position: top right;
+  background-repeat: no-repeat;
+}
+
+main#main {
+  padding-top: $header-nav-height;
+
+  @include media-breakpoint-down(sm) {
+    & {
+      padding-top: ($container-padding-x * .5);
+    }
+  }
+
+  div.content, div.page {
+    // Fix for BG video.
+    position: relative;
+  }
+
+  div.page {
+    margin-top: 1rem;
+  }
+}

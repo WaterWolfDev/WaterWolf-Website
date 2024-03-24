@@ -1,0 +1,54 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var array $skills
+ * @var bool $is_logged_in
+ */
+
+$this->layout('layouts::site');
+?>
+
+<div class="container page ts-style ts-team">
+    <h5 class="section-title h1">Our Community Talent Pool</h5>
+    <p> Our community is filled with incredible talent and skill, Here is a collective list of every submitted
+        talent in WaterWolf.</p>
+    <div class="row">
+        <?php
+        foreach ($skills as $row) {
+            ?>
+            <!-- Team member -->
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <div class="team-member image-flip">
+                    <div class="mainflip flip-0">
+                        <div class="frontside">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title"><?= escapeHtml($row['skill']) ?></h4>
+                                    <p><?= intval($row["occurrences"]) ?> Share This Skill.</p>
+
+                                    <?php
+                                    if ($is_logged_in) { ?>
+                                        <form method="POST" action="<?= $router->urlFor('dashboard:skills') ?>"
+                                              class="form-group">
+                                            <input type="hidden" name="skill"
+                                                   value="<?= escapeHtmlAttribute($row['skill']) ?>">
+                                            <input type="submit" name="add_fixture"
+                                                   value="Add this skill to my profile"
+                                                   class="btn btn-primary btn-sm mt-3">
+                                        </form>
+                                        <?php
+                                    } ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+            <!-- ./Team member -->
+            <?php
+        }
+        ?>
+    </div>
+</div>

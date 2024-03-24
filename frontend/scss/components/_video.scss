@@ -1,0 +1,16 @@
+video.bg-video {
+  display: none;
+
+  @include media-breakpoint-up(md) {
+    & {
+      display: block;
+      position: fixed;
+      object-fit: cover;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+    }
+  }
+}

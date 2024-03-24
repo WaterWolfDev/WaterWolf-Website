@@ -1,0 +1,124 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var Slim\Interfaces\RouteInterface|null $route
+ * @var bool $is_logged_in
+ */
+
+if ($route !== null) {
+    $here = $route->getName();
+} else {
+    $here = null;
+}
+?>
+
+<header>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/static/img/logo-with-logotype.svg" style="width: 211px; height: 45px;"
+                     alt="WaterWolf Family: We Build Adventure and Friendship">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="bi-info-circle"></i> About Us
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="<?= $router->urlFor('about') ?>">
+                                    <i class="bi-info-lg"></i> About WaterWolf
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="<?= $router->urlFor('team') ?>">
+                                    <i class="bi-people"></i> Our Team
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="<?= $router->urlFor('talent') ?>">
+                                    <i class="bi-stars"></i> Our Talents
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="bi-wrench-adjustable-circle"></i> Services
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="<?= $router->urlFor('portals') ?>">
+                                    <i class="bi-headset-vr"></i> Convention Portals
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="<?= $router->urlFor('posters:faq') ?>">
+                                    <i class="bi-file-image-fill"></i> Poster Network
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php if ($here === 'worlds'): ?>active<?php endif; ?>" href="<?= $router->urlFor('worlds') ?>">
+                            <i class="bi-globe-americas"></i> Worlds
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= $router->urlFor('wwradio') ?>" data-radio-popup="true">
+                            <i class="bi-broadcast"></i> Radio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php if ($here === 'live'): ?>active<?php endif; ?>" href="<?= $router->urlFor('live') ?>">
+                            <i class="bi-play-btn"></i> Live
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link <?php if ($here === 'donate'): ?>active<?php endif; ?>" href="<?= $router->urlFor('donate') ?>">
+                            <i class="bi-heart-fill"></i> Donate
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= $router->urlFor('discord') ?>" target="_blank">
+                            <i class="bi-discord" aria-hidden="true"></i> Discord
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="d-flex">
+                    <?php
+                    if ($is_logged_in): ?>
+                        <a href="<?= $router->urlFor('dashboard') ?>" class="btn btn-success my-2 my-sm-0">
+                            <i class="bi-person-fill" aria-hidden="true"></i> My Dashboard
+                        </a>&nbsp;
+                        <a href="<?= $router->urlFor('logout') ?>" class="btn btn-danger my-2 my-sm-0"
+                           data-confirm-danger="Are you sure you want to log out?">
+                            <i class="bi-box-arrow-right" aria-hidden="true"></i> Log Out
+                        </a>
+                    <?php
+                    else: ?>
+                        <a href="<?= $router->urlFor('login') ?>" class="btn btn-success my-2 my-sm-0">
+                            <i class="bi-key-fill" aria-hidden="true"></i> Login
+                        </a>&nbsp;
+                        <a href="<?= $router->urlFor('register') ?>" class="btn btn-primary my-2 my-sm-0">
+                            <i class="bi-person-check" aria-hidden="true"></i> Register
+                        </a>
+                    <?php
+                    endif; ?>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

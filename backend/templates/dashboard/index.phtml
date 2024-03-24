@@ -1,0 +1,17 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ */
+
+$this->layout('layouts::dashboard');
+?>
+
+<h1>Welcome to WaterWolf</h1>
+
+<div class="d-grid gap-2">
+    <a href="<?= $router->urlFor('dashboard:posters') ?>" class="btn btn-primary btn-block">Poster Network</a>
+    <a href="<?= $router->urlFor('dashboard:skills') ?>" class="btn btn-primary btn-block">My Skills</a>
+    <a href="<?= $router->urlFor('dashboard:profile') ?>" class="btn btn-primary btn-block">Edit My Profile</a>
+    <a href="<?= $router->urlFor('dashboard:dmx') ?>" class="btn btn-primary btn-block">DMX Lights</a>
+</div>

@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @var League\Plates\Template\Template $this
+ * @var string|null $error
+ */
+$this->layout('layouts::site');
+?>
+
+<div class="container page">
+    <div class="card mx-auto" style="max-width: 400px;">
+        <div class="card-body">
+            <form class="form-forgot" action="" method="POST" id="forgot-form">
+                <h2 class="text-center">
+                    Forgot My Password
+                </h2>
+                <p class="card-text">
+                    Enter your e-mail address below and a recovery code will be sent to you.
+                </p>
+
+                <?php
+                if ($error) : ?>
+                    <div class="alert alert-danger">
+                        <b>Error:</b> <?= escapeHtml($error) ?>
+                    </div>
+                <?php
+                endif; ?>
+
+                <div class="form-label-group">
+                    <label for="inputEmail">E-mail Address:</label>
+                    <input type="email" id="inputEmail" class="form-control" name="email" placeholder="awoo@example.com"
+                           required autofocus>
+                </div>
+
+                <div class="mt-3 d-grid gap-2">
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">Send Recovery Code</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

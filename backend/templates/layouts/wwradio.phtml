@@ -1,0 +1,17 @@
+<?php
+/** @var League\Plates\Template\Template $this */
+
+$this->fetch('common/frontend_assets', [
+    'component' => 'frontend/wwradio.js',
+])
+?>
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <?php
+    require(__DIR__ . '/sections/header.phtml'); ?>
+</head>
+<body>
+<?= $this->section('content') ?>
+</body>
+</html>

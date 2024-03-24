@@ -1,0 +1,15 @@
+# Compiled Code
+/web/static/dist/*
+
+# User Uploaded Content
+/web/media/*
+
+# Local Dev/Editors
+/build/dev/db_full.sql
+/.idea
+/dev.env
+/docker-compose.override.yml
+
+# Packages
+/vendor/*
+/node_modules/*

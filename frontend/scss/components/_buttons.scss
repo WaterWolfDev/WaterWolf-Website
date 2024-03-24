@@ -1,0 +1,9 @@
+.buttons {
+  & > * {
+    margin-right: .75rem;
+  }
+
+  & > *:last-child {
+    margin-right: 0;
+  }
+}

@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ */
+$this->layout('layouts::site');
+?>
+
+<video loading="lazy" loop="loop" autoplay muted="muted" volume="0" class="bg-video" poster=" /static/video/shy.jpg">
+    <source src="/static/video/shy.webm" type="video/webm">
+    <source src="/static/video/shy.mp4" type="video/mp4">
+</video>
+
+<div class="content">
+    <div class="container">
+        <div class="text-center">
+            <img src="/static/img/TopHeader.png" class="img-fluid"/>
+        </div>
+        <div class="card my-4">
+            <div class="card-header p-2">
+                <h1 class="card-title m-0 text-center">We are WaterWolf - The Open-Source MakerSpace of VRCHAT</h1>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm">
+                <div class="card">
+                    <h2 class="card-header">How Do I Join?</h2>
+                    <div class="card-body">
+                        <p>Joining WaterWolf is quick easy and without obligation. Just join the discord and come hang
+                            out with us!
+                        </p>
+
+                        <div class="text-center">
+                            <img src="/static/img/amy_isaac.png" class="img-fluid">
+                        </div>
+                        <div class="d-grid g-2">
+                            <a href="<?= $router->urlFor('discord') ?>" class="btn btn-primary btn-block btn-lg">Join
+                                Discord</a>
+                        </div>
+
+                        <p class="mt-3">Join the WaterWolf network, Make an account and get connected to tools to make
+                            your VRC
+                            experience amazing!
+                        </p>
+                        <div class="text-center">
+                            <img src="/static/img/tech_ada.png" class="img-fluid">
+                        </div>
+                        <div class="d-grid g-2">
+                            <a href="<?= $router->urlFor('register') ?>" class="btn btn-success btn-block btn-lg">Create
+                                Account</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm">
+                <div class="card mb-4">
+                    <h2 class="card-header">What is WaterWolf?</h2>
+                    <div class="card-body">
+                        <p><strong>WaterWolf is a community in VRChat focused on building, exploring and promoting
+                                immersive and enjoyable worlds.</strong></p>
+
+                        <p>The WaterWolf community is active in many aspects of the VRChat world. Our skilled world
+                            and avatar builders excel at creating the worlds, avatars, assets and technologies that
+                            power some of the best VRChat experiences. Our community also explores the wider world of
+                            VRChat, visiting and curating particularly interesting places.</p>
+
+                        <p>WaterWolf offers a wide range of adventures to anyone who joins our community. Whether you're
+                            making new friends, networking with talented world builders, or grooving to the beat at one
+                            of our events, you're sure to find adventure and friendship as part of the WaterWolf family.</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2 class="card-header">Dive into WaterWolf Adventures!</h2>
+                    <div class="card-body">
+                        <p>Ever dreamt of unparalleled adventures in VR? Welcome to <strong>WaterWolf</strong>. A mosaic
+                            of diversity & creativity, this VRChat haven offers escapades that defy the ordinary.</p>
+
+                        <p>Seeking memories that last? Craving resonating experiences? WaterWolf beckons. By hitting the
+                            <strong>donate button</strong>, you're not just supporting - you're joining a story. A
+                            chapter waiting to be written.
+                        </p>
+
+                        <a href="<?= $router->urlFor('donate') ?>" class="btn btn-primary">Donate Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var array $world
+ * @var array $sidebar_worlds
+ */
+
+$this->layout('layouts::site');
+?>
+
+<div class="container page">
+    <?= $this->fetch('common/breadcrumbs', [
+        'urls' => [
+            $router->urlFor('worlds') => 'Worlds',
+        ],
+        'current' => $world['title'],
+    ]) ?>
+
+    <h1><?= escapeHtml($world['title']) ?></h1>
+    <h2>by <?= escapeHtml($world['world_creator']) ?></h2>
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card mb-3">
+                <img class="card-img" src="<?= mediaUrl($world['image']) ?>" width=100%/>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text"><?= escapeHtml($world['description']) ?></p>
+                </div>
+            </div>
+
+            <?= $this->fetch(
+                'common/global_comments',
+                [
+                    'comment_id' => 'world_comment_' . $world['id'],
+                ]
+            ) ?>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <h5 class="card-header">Join The World</h5>
+                <div class="card-body">
+                    <div class="d-grid g-2">
+                        <a href="https://vrchat.com/home/launch?worldId=<?= escapeHtmlAttribute(
+                            $world['world_id']
+                        ); ?>"
+                           class="btn btn-primary btn-lg">Join World</a>
+                    </div>
+                </div>
+            </div>
+
+            <?php
+            foreach ($sidebar_worlds as $row) { ?>
+                <div class="card" style="overflow:hidden; height: 70px; margin-bottom: 5px;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <a href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
+                                <img src="<?= mediaUrl($row['image']) ?>" style="margin-top:-15px; margin-bottom:15px;"
+                                     height="100px" width="90px">
+                            </a>
+                        </div>
+
+                        <div class="col-lg-8" style="overflow:hidden">
+                            <?= escapeHtml(substr($row['title'], 0, 30)) ?>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            } ?>
+        </div>
+    </div>
+</div>

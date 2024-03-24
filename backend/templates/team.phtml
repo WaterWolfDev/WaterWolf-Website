@@ -1,0 +1,57 @@
+<?php
+/**
+ * @var League\Plates\Template\Template $this
+ * @var Slim\Interfaces\RouteParserInterface $router
+ * @var array $team_members
+ */
+
+$this->layout('layouts::site');
+?>
+
+<div class="container page ts-style ts-team">
+    <h1 class="section-title">Our Team</h1>
+    <div class="row">
+        <?php
+        foreach ($team_members as $row): ?>
+            <!-- Team member -->
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <a class="team-member-container"
+                   href="<?= $router->urlFor('profile', ['user' => $row['username']]) ?>">
+                    <div class="team-member image-flip">
+                        <div class="mainflip flip-0">
+                            <div class="frontside">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <img class="img-fluid" src="<?= avatarUrl($row['user_img']) ?>" alt="Avatar"
+                                             loading="lazy">
+                                        <h4 class="card-title my-2">
+                                            <?= escapeHtml($row['username']) ?>
+                                        </h4>
+                                        <?php
+                                        if (!empty($row['pronouns'])) : ?>
+                                            <div>
+                                                <?= escapeHtml($row['pronouns']) ?>
+                                            </div>
+                                        <?php
+                                        endif; ?>
+                                        <?php
+                                        if (!empty($row['title'])) : ?>
+                                            <div>
+                                                <?= escapeHtml($row['title']) ?>
+                                            </div>
+                                        <?php
+                                        endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <br>
+            </div>
+            <!-- ./Team member -->
+
+        <?php
+        endforeach; ?>
+    </div>
+</div>

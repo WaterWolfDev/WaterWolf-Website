@@ -1,0 +1,21 @@
+footer#footer {
+  position: relative;
+  z-index: 10;
+  background-color: #006CA2 !important;
+
+  color: #FFF !important;
+  text-shadow: 1px 1px #000;
+
+  font-size: $font-size-sm;
+
+  a, a:focus, a:active {
+    color: #ffffff;
+  }
+
+  .footer-icons {
+    a {
+      padding: 0 1rem;
+      font-size: $font-size-lg * 2;
+    }
+  }
+}
