@@ -26,7 +26,7 @@ jobs:
 
             - name : Run PHPStan
               run : |
-                  vendor/bin/phpstan analyze --error-format=checkstyle | vendor/bin/cs2pr
+                  vendor/bin/phpstan analyze --memory-limit=-1 --error-format=checkstyle | vendor/bin/cs2pr
 
             - name : Run PHP Code Sniffer
               run : |
