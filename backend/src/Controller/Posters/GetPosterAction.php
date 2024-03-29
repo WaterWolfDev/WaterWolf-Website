@@ -5,7 +5,9 @@ namespace App\Controller\Posters;
 use App\Environment;
 use App\Http\Response;
 use App\Http\ServerRequest;
+use App\Media;
 use Doctrine\DBAL\Connection;
+use League\Flysystem\FilesystemException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\SimpleCache\CacheInterface;
 
@@ -14,7 +16,8 @@ final readonly class GetPosterAction
     public function __construct(
         private Connection $db,
         private CacheInterface $cache,
-        private Environment $environment
+        private Environment $environment,
+        private Media $media,
     ) {
     }
 
@@ -116,36 +119,50 @@ final readonly class GetPosterAction
             }
         }
 
-        $imagePath = $this->environment->getBaseDirectory() . '/web/static/img/no_poster.jpg';
+        $image = null;
 
         if (!empty($post)) {
+            $fs = $this->media->getFilesystem();
+
             $tryPaths = [
                 '/img/posters/' . $post['file'] . '_full.jpg',
                 '/img/posters/' . $post['file'] . '_590x1000.jpeg',
             ];
 
             foreach ($tryPaths as $tryPath) {
-                $postPath = mediaPath($tryPath);
-                if (file_exists($postPath)) {
-                    $imagePath = $postPath;
+                try {
+                    $image = $fs->read($tryPath);
                     break;
+                } catch (FilesystemException) {
+                    // Noop
                 }
             }
 
             // Update view count
             $this->db->executeQuery(
                 <<<'SQL'
-                UPDATE web_posters
-                SET views=views+1, last_viewed = UNIX_TIMESTAMP()
-                WHERE id = :id
-            SQL,
+                    UPDATE web_posters
+                    SET views=views+1, last_viewed = UNIX_TIMESTAMP()
+                    WHERE id = :id
+                SQL,
                 [
                     'id' => $post['id'],
                 ]
             );
         }
 
-        return $response->renderFile($imagePath)
-            ->withHeader('Content-Disposition', 'inline');
+        // Default poster if no other image is found.
+        if (null === $image) {
+            $image = file_get_contents(
+                $this->environment->getBaseDirectory() . '/web/static/img/no_poster.jpg'
+            );
+        }
+
+        $response->getBody()->write($image);
+
+        return $response->withHeader('Pragma', 'public')
+            ->withHeader('Expires', '0')
+            ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0')
+            ->withHeader('Content-Type', 'image/jpeg');
     }
 }

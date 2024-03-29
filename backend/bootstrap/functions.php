@@ -23,45 +23,6 @@ function escapeJs(mixed $string): string
     return json_encode($string, JSON_THROW_ON_ERROR);
 }
 
-function mediaUrl(string $url): string
-{
-    // Encode individual portions of the URL between slashes.
-    $url = implode("/", array_map("rawurlencode", explode("/", $url)));
-
-    return Environment::getInstance()->getMediaUrl() . '/' . ltrim($url, '/');
-}
-
-function mediaPath(string $path): string
-{
-    $mediaDir = Environment::getInstance()->getMediaPath();
-    $mediaPath = Symfony\Component\Filesystem\Path::canonicalize($mediaDir . '/' . ltrim($path, '/'));
-
-    // Check for path traversal and throw if detected.
-    if (!Symfony\Component\Filesystem\Path::isBasePath($mediaDir, $mediaPath)) {
-        throw new \InvalidArgumentException('Invalid media path!');
-    }
-
-    (new Filesystem())->mkdir(dirname($mediaPath));
-
-    return $mediaPath;
-}
-
-function avatarUrl(string|bool|null $userImg): string
-{
-    return (!empty($userImg))
-        ? mediaUrl('/img/profile/' . $userImg)
-        : '/static/img/avatar.webp';
-}
-
-function djAvatarUrl(
-    string|bool|null $djImg,
-    string|bool|null $userImg
-): string {
-    return (!empty($djImg))
-        ? mediaUrl('/img/djs/' . $djImg)
-        : avatarUrl($userImg);
-}
-
 /*
  * Input Escaping
  */

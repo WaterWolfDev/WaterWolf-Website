@@ -4,6 +4,7 @@ namespace App\Controller\Dashboard;
 
 use App\Http\Response;
 use App\Http\ServerRequest;
+use App\Media;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\UploadedFile;
 use Intervention\Image\ImageManager;
@@ -14,8 +15,8 @@ final readonly class AvatarAction
 {
     public function __construct(
         private Connection $db,
-        private Filesystem $fsUtilities,
-        private ImageManager $imageManager
+        private ImageManager $imageManager,
+        private Media $media,
     ) {
     }
 
@@ -26,6 +27,8 @@ final readonly class AvatarAction
     ): ResponseInterface {
         $currentUser = $request->getCurrentUser();
         assert($currentUser !== null);
+
+        $fs = $this->media->getFilesystem();
 
         $type = $params['type'] ?? $request->getParam('type', 'avatar');
         $avatarField = match ($type) {
@@ -50,21 +53,21 @@ final readonly class AvatarAction
 
             // Remove existing image if it's set.
             if (!empty($currentUser[$avatarField])) {
-                $currentImage = mediaPath($uploadFolder . '/' . $currentUser[$avatarField]);
-                if (file_exists($currentImage)) {
-                    $this->fsUtilities->remove($currentImage);
+                $currentImage = $uploadFolder . '/' . $currentUser[$avatarField];
+                if ($fs->has($currentImage)) {
+                    $fs->delete($currentImage);
                 }
             }
 
             $imageFileType = strtolower(pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION));
             $imageBasename = $currentUser['id'] . '-' . time() . '.' . $imageFileType;
-
-            $targetFile = mediaPath($uploadFolder . '/' . $imageBasename);
+            $targetFile = $uploadFolder . '/' . $imageBasename;
 
             // Resize the uploaded image and save it to the destination location.
             $image = $this->imageManager->read($uploadedFile->getStream()->getContents());
             $image->cover(332, 364);
-            $image->save($targetFile);
+
+            $fs->write($targetFile, $image->encodeByPath($targetFile)->toString());
 
             // Set the user's image location to the new image.
             $this->db->update(

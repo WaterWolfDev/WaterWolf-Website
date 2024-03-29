@@ -2,6 +2,7 @@
 /**
  * @var League\Plates\Template\Template $this
  * @var Slim\Interfaces\RouteParserInterface $router
+ * @var App\Media $media
  * @var array $team_members
  */
 
@@ -22,7 +23,7 @@ $this->layout('layouts::site');
                             <div class="frontside">
                                 <div class="card">
                                     <div class="card-body text-center">
-                                        <img class="img-fluid" src="<?= avatarUrl($row['user_img']) ?>" alt="Avatar"
+                                        <img class="img-fluid" src="<?= $media->avatarUrl($row['user_img']) ?>" alt="Avatar"
                                              loading="lazy">
                                         <h4 class="card-title my-2">
                                             <?= escapeHtml($row['username']) ?>

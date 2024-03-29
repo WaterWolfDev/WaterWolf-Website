@@ -4,6 +4,7 @@ namespace App\Controller\Dashboard\Admin;
 
 use App\Http\Response;
 use App\Http\ServerRequest;
+use App\Media;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Client;
 use Intervention\Image\ImageManager;
@@ -14,7 +15,8 @@ final readonly class AddWorldAction
     public function __construct(
         private Connection $db,
         private Client $http,
-        private ImageManager $imageManager
+        private ImageManager $imageManager,
+        private Media $media,
     ) {
     }
 
@@ -68,9 +70,10 @@ final readonly class AddWorldAction
                     : $worldData['image'];
 
                 $imageRelativePath = '/img/worlds/' . $worldDbTitle . '.png';
-                $imagePath = mediaPath($imageRelativePath);
 
-                $this->imageManager->read($imageData)->save($imagePath);
+                $image = $this->imageManager->read($imageData);
+                $fs = $this->media->getFilesystem();
+                $fs->write($imageRelativePath, $image->encodeByPath($imageRelativePath)->toString());
 
                 // Add the DB record
                 $this->db->insert(
