@@ -72,7 +72,7 @@ function findUrl(image, size) {
 const streamInfoUrl = "https://quasar.shoutca.st:2199/external/rpc.php?m=streaminfo.get&username=techsane";
 const lastFmApiKey = "791f0afe347adc2ba93a3c7317a2810a";
 
-function GetCurrentTrack(){
+function getCurrentTrack(){
     $.getJSON(streamInfoUrl).done(function(data) {
         const radioData = data.data[0] ?? {};
 
@@ -130,9 +130,8 @@ window.startPlayerLoop = function() {
         $("video").prop("muted",false).prop("volume",0.5);
     }, 1000);
 
-    GetCurrentTrack();
-    setTimeout(function(){
-        $('#np-artist').text(nowPlayingArtist);
-        $('#np-title').text(nowPlayingTitle);
-    },3000)
+    getCurrentTrack();
+    setInterval(function(){
+        getCurrentTrack();
+    },5000);
 };

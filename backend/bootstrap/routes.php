@@ -219,6 +219,7 @@ return function (Slim\App $app) {
      */
     $redirects = [
         'discord' => 'https://discord.gg/waterwolf',
+        'github' => 'https://github.com/WaterWolfDev',
         'twitch' => 'https://www.twitch.tv/waterwolfvr',
         'twitter' => 'https://twitter.com/waterwolftown',
         'x' => 'https://twitter.com/waterwolftown',

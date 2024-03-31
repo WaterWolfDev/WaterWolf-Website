@@ -20,7 +20,8 @@ final class View extends Engine
 
     public function __construct(
         Environment $environment,
-        RouteParserInterface $router
+        RouteParserInterface $router,
+        Media $media
     ) {
         parent::__construct(
             dirname(__DIR__) . '/templates',
@@ -36,6 +37,7 @@ final class View extends Engine
                 'sections' => $this->sections,
                 'environment' => $environment,
                 'router' => $router,
+                'media' => $media,
             ]
         );
     }

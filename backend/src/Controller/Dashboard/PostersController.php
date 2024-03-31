@@ -5,6 +5,7 @@ namespace App\Controller\Dashboard;
 use App\Exception\NotFoundException;
 use App\Http\Response;
 use App\Http\ServerRequest;
+use App\Media;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Intervention\Image\ImageManager;
@@ -15,7 +16,8 @@ final readonly class PostersController
 {
     public function __construct(
         private Connection $db,
-        private ImageManager $imageManager
+        private ImageManager $imageManager,
+        private Media $media,
     ) {
     }
 
@@ -68,6 +70,8 @@ final readonly class PostersController
 
         $nowDt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
+        $fs = $this->media->getFilesystem();
+
         foreach ($qb->fetchAllAssociative() as $poster) {
             // Get poster URL
             $tryMediaUrls = [
@@ -76,10 +80,10 @@ final readonly class PostersController
             ];
 
             $mediaUrl = '/static/img/no_poster_thumb.jpg';
+
             foreach ($tryMediaUrls as $tryMediaUrl) {
-                $mediaPath = mediaPath($tryMediaUrl);
-                if (file_exists($mediaPath)) {
-                    $mediaUrl = mediaUrl($tryMediaUrl);
+                if ($fs->has($tryMediaUrl)) {
+                    $mediaUrl = $this->media->mediaUrl($tryMediaUrl);
                     break;
                 }
             }
@@ -385,10 +389,12 @@ final readonly class PostersController
             '_590x1000.jpeg',
         ];
 
+        $fs = $this->media->getFilesystem();
+
         foreach ($sizes as $size) {
-            $filePath = mediaPath('/img/posters/' . $posterFile . $size);
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            $filePath = '/img/posters/' . $posterFile . $size;
+            if ($fs->has($filePath)) {
+                $fs->delete($filePath);
             }
         }
     }
@@ -405,12 +411,14 @@ final readonly class PostersController
             [590, 1000, $basename . '_full.jpg'],
         ];
 
+        $fs = $this->media->getFilesystem();
+
         foreach ($sizes as [$width, $height, $filename]) {
             $thumbnail = clone $image;
             $thumbnail->cover($width, $height);
 
-            $destPath = mediaPath('/img/posters/' . $filename);
-            $thumbnail->save($destPath);
+            $destPath = '/img/posters/' . $filename;
+            $fs->write($destPath, $thumbnail->encodeByPath($destPath)->toString());
         }
 
         return $basename;

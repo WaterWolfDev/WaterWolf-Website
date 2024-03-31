@@ -2,6 +2,7 @@
 /**
  * @var League\Plates\Template\Template $this
  * @var Slim\Interfaces\RouteParserInterface $router
+ * @var App\Media $media
  * @var bool $isAdminMode
  * @var array $profile
  * @var array $groups
@@ -99,7 +100,7 @@ endif; ?>
                         <div class="card bg-dark">
                             <?php
                             if ($isAdminMode) : ?>
-                                <img class="card-img-top" src="<?= avatarUrl($profile['user_img']) ?>" alt="Avatar">
+                                <img class="card-img-top" src="<?= $media->avatarUrl($profile['user_img']) ?>" alt="Avatar">
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <?= escapeHtml($profile['username']) ?>
@@ -108,7 +109,7 @@ endif; ?>
                             <?php
                             else : ?>
                                 <a href="<?= $router->urlFor('dashboard:avatar') ?>">
-                                    <img class="card-img-top" src="<?= avatarUrl($profile['user_img']) ?>" alt="Avatar">
+                                    <img class="card-img-top" src="<?= $media->avatarUrl($profile['user_img']) ?>" alt="Avatar">
                                 </a>
 
                                 <div class="card-body">
@@ -222,7 +223,7 @@ endif; ?>
                             <?php
                             if ($isAdminMode) : ?>
                                 <img class="img-fluid"
-                                     src="<?= djAvatarUrl($profile['dj_img'], $profile['user_img']) ?>" alt="DJ Avatar">
+                                     src="<?= $media->djAvatarUrl($profile['dj_img'], $profile['user_img']) ?>" alt="DJ Avatar">
                                 <div class="card-body">
                                     <h5 class="card-title">
                                         <?= escapeHtml($profile['username']) ?>
@@ -232,7 +233,7 @@ endif; ?>
                             else : ?>
                                 <a href="<?= $router->urlFor('dashboard:avatar', ['type' => 'dj']) ?>">
                                     <img class="img-fluid"
-                                         src="<?= djAvatarUrl($profile['dj_img'], $profile['user_img']) ?>"
+                                         src="<?= $media->djAvatarUrl($profile['dj_img'], $profile['user_img']) ?>"
                                          alt="DJ Avatar">
                                 </a>
 

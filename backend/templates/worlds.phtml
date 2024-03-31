@@ -2,6 +2,7 @@
 /**
  * @var League\Plates\Template\Template $this
  * @var Slim\Interfaces\RouteParserInterface $router
+ * @var App\Media $media
  * @var array $worlds
  */
 
@@ -61,7 +62,7 @@ $this->layout('layouts::site');
                             <div class="img-event">
                                 <a href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
                                     <img class="card-img-top"
-                                         src="<?= mediaUrl($row['image']) ?>" loading="lazy"/>
+                                         src="<?= $media->mediaUrl($row['image']) ?>" loading="lazy"/>
                                 </a>
                             </div>
                             <div class="caption card-body">
@@ -92,7 +93,7 @@ $this->layout('layouts::site');
                         <div class="d-flex align-items-center mb-2">
                             <div class="flex-shrink-0">
                                 <a href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
-                                    <img class="img-fluid" src="<?= mediaUrl($row['image']) ?>" loading="lazy"
+                                    <img class="img-fluid" src="<?= $media->mediaUrl($row['image']) ?>" loading="lazy"
                                          style="max-width: 100px;"/>
                                 </a>
                             </div>

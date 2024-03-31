@@ -4,8 +4,6 @@ namespace App;
 
 final class Environment
 {
-    private static Environment $instance;
-
     // Consts represent the environment variable names as passed to the app.
     private const APPLICATION_ENV = 'APPLICATION_ENV';
 
@@ -103,15 +101,5 @@ final class Environment
     {
         return $this->data[self::DISCORD_WEBHOOK_URL]
             ?? throw new \RuntimeException('Discord webhook URL not configured.');
-    }
-
-    public static function getInstance(): Environment
-    {
-        return self::$instance;
-    }
-
-    public static function setInstance(Environment $instance): void
-    {
-        self::$instance = $instance;
     }
 }

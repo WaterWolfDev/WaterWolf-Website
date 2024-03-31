@@ -1,9 +1,6 @@
 # WaterWolf Site
 
-This is a rewritten version of the WaterWolf web site that employs modern security and coding best practices while
-still remaining easy to maintain and contribute to for a variety of skill levels.
-
-See the TODO section for pending work that can be claimed.
+This is the WaterWolf Website
 
 ## Production
 

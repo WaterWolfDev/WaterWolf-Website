@@ -35,8 +35,6 @@ final class AppFactory
 
     public static function buildContainer(Environment $environment): ContainerInterface
     {
-        Environment::setInstance($environment);
-
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAttributes(true);
