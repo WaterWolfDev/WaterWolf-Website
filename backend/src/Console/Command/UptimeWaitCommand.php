@@ -12,12 +12,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand('uptime-wait', 'Wait for critical services (i.e. database) to be started up before continuing.')]
 final class UptimeWaitCommand extends AbstractCommand
 {
-    public function __construct(
-        private readonly Environment $environment
-    ) {
-        parent::__construct();
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -29,7 +23,7 @@ final class UptimeWaitCommand extends AbstractCommand
 
         $connectionParams = [
             'driver' => 'pdo_mysql',
-            ...$this->environment->getDatabaseInfo(),
+            ...Environment::getDatabaseInfo(),
         ];
 
         while ($elapsed <= $timeout) {

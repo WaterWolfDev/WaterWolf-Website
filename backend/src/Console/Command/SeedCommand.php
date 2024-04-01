@@ -15,7 +15,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 final class SeedCommand extends AbstractCommand
 {
     public function __construct(
-        private readonly Environment $environment,
         private readonly Connection $db
     ) {
         parent::__construct();
@@ -25,7 +24,7 @@ final class SeedCommand extends AbstractCommand
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$this->environment->isDev()) {
+        if (!Environment::isDev()) {
             $io->error('This can only be used in development mode.');
             return 1;
         }
@@ -48,7 +47,7 @@ final class SeedCommand extends AbstractCommand
         $arguments = [
             'command' => 'seed:run',
             '--environment' => 'db',
-            '--configuration' => $this->environment->getBaseDirectory() . '/phinx.php',
+            '--configuration' => Environment::getBaseDirectory() . '/phinx.php',
         ];
 
         return $command->run(new ArrayInput($arguments), $output);

@@ -13,19 +13,17 @@ use Symfony\Component\Console\Application as ConsoleApplication;
 
 final class AppFactory
 {
-    public static function createApp(
-        array $appEnvironment = []
-    ): SlimApp {
-        $environment = self::buildEnvironment($appEnvironment);
-        $di = self::buildContainer($environment);
+    public static function createApp(): SlimApp
+    {
+        self::applyPhpSettings();
+        $di = self::buildContainer();
         return $di->get(SlimApp::class);
     }
 
-    public static function createCli(
-        array $appEnvironment = []
-    ): ConsoleApplication {
-        $environment = self::buildEnvironment($appEnvironment);
-        $di = self::buildContainer($environment);
+    public static function createCli(): ConsoleApplication
+    {
+        self::applyPhpSettings();
+        $di = self::buildContainer();
 
         // Some CLI commands require the App to be injected for routing.
         $di->get(SlimApp::class);
@@ -33,19 +31,16 @@ final class AppFactory
         return $di->get(ConsoleApplication::class);
     }
 
-    public static function buildContainer(Environment $environment): ContainerInterface
+    public static function buildContainer(): ContainerInterface
     {
         $containerBuilder = new ContainerBuilder();
         $containerBuilder->useAutowiring(true);
         $containerBuilder->useAttributes(true);
 
-        if ($environment->isProduction()) {
-            $containerBuilder->enableCompilation($environment->getTempDirectory());
+        if (Environment::isProduction()) {
+            $containerBuilder->enableCompilation(Environment::getTempDirectory());
         }
 
-        $containerBuilder->addDefinitions([
-            Environment::class => $environment,
-        ]);
         $containerBuilder->addDefinitions(dirname(__DIR__) . '/bootstrap/services.php');
 
         $di = $containerBuilder->build();
@@ -59,29 +54,15 @@ final class AppFactory
         return $di;
     }
 
-    /**
-     * @param array<string, mixed> $rawEnvironment
-     */
-    public static function buildEnvironment(array $rawEnvironment = []): Environment
-    {
-        $_ENV = getenv();
-        $rawEnvironment = array_merge(array_filter($_ENV), $rawEnvironment);
-        $environment = new Environment($rawEnvironment);
-
-        self::applyPhpSettings($environment);
-
-        return $environment;
-    }
-
-    private static function applyPhpSettings(Environment $environment): void
+    private static function applyPhpSettings(): void
     {
         error_reporting(
-            $environment->isProduction()
+            Environment::isProduction()
                 ? E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED
                 : E_ALL & ~E_NOTICE
         );
 
-        $displayStartupErrors = (!$environment->isProduction() || $environment->isCli())
+        $displayStartupErrors = (!Environment::isProduction() || Environment::isCli())
             ? '1'
             : '0';
         ini_set('display_startup_errors', $displayStartupErrors);

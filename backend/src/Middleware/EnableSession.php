@@ -27,10 +27,9 @@ final class EnableSession implements MiddlewareInterface
     private readonly CacheItemPoolInterface $cachePool;
 
     public function __construct(
-        private readonly Environment $environment,
         CacheItemPoolInterface $psr6Cache
     ) {
-        if ($this->environment->isCli()) {
+        if (Environment::isCli()) {
             $psr6Cache = new ArrayAdapter();
         }
 
@@ -47,7 +46,7 @@ final class EnableSession implements MiddlewareInterface
             cacheExpire: 43200,
             lastModified: time(),
             persistent: true,
-            cookieSecure: $this->environment->isProduction(),
+            cookieSecure: Environment::isProduction(),
             cookieHttpOnly: true
         );
     }

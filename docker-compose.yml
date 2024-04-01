@@ -12,6 +12,8 @@ services:
         - dev.env
     environment:
       MARIADB_SERVER: db
+      PHP_MEDIA_PATH: /var/app/www/web/media/site
+      MEDIA_SITE_URL: /media/site
     restart: always
     ports:
       - "127.0.0.1:8080:8080"

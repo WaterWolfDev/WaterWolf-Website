@@ -1,7 +1,8 @@
 <?php
 
-use App\Environment;
-use Symfony\Component\Filesystem\Filesystem;
+/*
+ * Input Escaping
+ */
 
 function escapeHtml(?string $html): string
 {
@@ -24,8 +25,41 @@ function escapeJs(mixed $string): string
 }
 
 /*
- * Input Escaping
+ * User-uploaded media
  */
+
+function mediaUrl(string $url): string
+{
+    static $mediaBaseUrl;
+    if (!$mediaBaseUrl) {
+        $mediaBaseUrl = $_ENV['MEDIA_SITE_URL'] ?? null;
+    }
+
+    if (empty($mediaBaseUrl)) {
+        throw new \RuntimeException('Media base URL not configured.');
+    }
+
+    // Encode individual portions of the URL between slashes.
+    $url = implode("/", array_map("rawurlencode", explode("/", $url)));
+
+    return $mediaBaseUrl . '/' . ltrim($url, '/');
+}
+
+function avatarUrl(string|bool|null $userImg): string
+{
+    return (!empty($userImg))
+        ? mediaUrl('/img/profile/' . $userImg)
+        : '/static/img/avatar.webp';
+}
+
+function djAvatarUrl(
+    string|bool|null $djImg,
+    string|bool|null $userImg
+): string {
+    return (!empty($djImg))
+        ? mediaUrl('/img/djs/' . $djImg)
+        : avatarUrl($userImg);
+}
 
 function humanTime(string|int|null $timestamp = "", string $format = 'D, M d, Y \a\t g:i A'): string
 {

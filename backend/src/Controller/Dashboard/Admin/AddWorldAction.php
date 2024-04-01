@@ -15,8 +15,7 @@ final readonly class AddWorldAction
     public function __construct(
         private Connection $db,
         private Client $http,
-        private ImageManager $imageManager,
-        private Media $media,
+        private ImageManager $imageManager
     ) {
     }
 
@@ -72,7 +71,8 @@ final readonly class AddWorldAction
                 $imageRelativePath = '/img/worlds/' . $worldDbTitle . '.png';
 
                 $image = $this->imageManager->read($imageData);
-                $fs = $this->media->getFilesystem();
+
+                $fs = Media::getFilesystem();
                 $fs->write($imageRelativePath, $image->encodeByPath($imageRelativePath)->toString());
 
                 // Add the DB record

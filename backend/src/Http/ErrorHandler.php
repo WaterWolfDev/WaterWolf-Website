@@ -31,7 +31,6 @@ final class ErrorHandler extends SlimErrorHandler
     private bool $returnJson = false;
 
     public function __construct(
-        private readonly Environment $environment,
         private readonly View $view,
         private readonly EnableSession $injectSession,
         App $app,
@@ -47,7 +46,7 @@ final class ErrorHandler extends SlimErrorHandler
         bool $logErrors,
         bool $logErrorDetails
     ): ResponseInterface {
-        $this->showDetailed = $this->environment->isDev() && !($exception instanceof HttpException);
+        $this->showDetailed = Environment::isDev() && !($exception instanceof HttpException);
 
         if ($exception instanceof HttpException) {
             $this->loggerLevel = Level::Info;
@@ -62,7 +61,7 @@ final class ErrorHandler extends SlimErrorHandler
     {
         $xhr = $req->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
 
-        if ($xhr || $this->environment->isCli()) {
+        if ($xhr || Environment::isCli()) {
             return true;
         }
 
