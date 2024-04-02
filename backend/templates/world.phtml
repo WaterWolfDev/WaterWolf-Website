@@ -2,7 +2,6 @@
 /**
  * @var League\Plates\Template\Template $this
  * @var Slim\Interfaces\RouteParserInterface $router
- * @var App\Media $media
  * @var array $world
  * @var array $sidebar_worlds
  */
@@ -24,7 +23,7 @@ $this->layout('layouts::site');
     <div class="row">
         <div class="col-lg-9">
             <div class="card mb-3">
-                <img class="card-img" src="<?= $media->mediaUrl($world['image']) ?>" width=100%/>
+                <img class="card-img" src="<?= mediaUrl($world['image']) ?>" width=100%/>
             </div>
 
             <div class="card mb-3">
@@ -60,7 +59,7 @@ $this->layout('layouts::site');
                     <div class="row">
                         <div class="col-lg-4">
                             <a href="<?= $router->urlFor('world', ['id' => $row['id']]) ?>">
-                                <img src="<?=$media->mediaUrl($row['image']) ?>" style="margin-top:-15px; margin-bottom:15px;"
+                                <img src="<?=mediaUrl($row['image']) ?>" style="margin-top:-15px; margin-bottom:15px;"
                                      height="100px" width="90px">
                             </a>
                         </div>

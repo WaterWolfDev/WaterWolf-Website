@@ -30,8 +30,7 @@ return [
     // Slim app
     Slim\App::class => function (
         ContainerInterface $di,
-        LoggerInterface $logger,
-        Environment $env
+        LoggerInterface $logger
     ) {
         $httpFactory = new HttpFactory();
 
@@ -46,8 +45,8 @@ return [
         $routeCollector = $app->getRouteCollector();
         $routeCollector->setDefaultInvocationStrategy(new RequestResponse());
 
-        if ($env->isProduction()) {
-            $routeCollector->setCacheFile($env->getTempDirectory() . '/app_routes.cache.php');
+        if (Environment::isProduction()) {
+            $routeCollector->setCacheFile(Environment::getTempDirectory() . '/app_routes.cache.php');
         }
 
         call_user_func(include(__DIR__ . '/routes.php'), $app);
@@ -62,7 +61,7 @@ return [
 
         // Add an error handler for most in-controller/task situations.
         $errorHandler = $app->addErrorMiddleware(
-            $env->isDev(),
+            Environment::isDev(),
             true,
             true,
             $logger
@@ -87,6 +86,7 @@ return [
         $commandLoader = new ContainerCommandLoader(
             $di,
             [
+                'backup' => App\Console\Command\BackupCommand::class,
                 'init' => App\Console\Command\InitCommand::class,
                 'migrate' => App\Console\Command\MigrateCommand::class,
                 'seed' => App\Console\Command\SeedCommand::class,
@@ -104,9 +104,9 @@ return [
     Escaper::class => static fn() => new Escaper('utf-8'),
 
     // Database Abstraction Layer
-    Connection::class => static function (Environment $env) {
+    Connection::class => static function () {
         $connectionParams = [
-            ...$env->getDatabaseInfo(),
+            ...Environment::getDatabaseInfo(),
             'driver' => 'pdo_mysql',
             'options' => [
                 \PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES 'UTF8MB4' COLLATE 'utf8mb4_unicode_ci'",
@@ -120,8 +120,11 @@ return [
     ImageManager::class => static fn() => new ImageManager(new ImageManagerGdDriver()),
 
     // E-mail delivery service
-    Mailer::class => static function (Environment $env) {
-        $dsn = MailerDsn::fromString($env->getMailerDsn());
+    Mailer::class => static function () {
+        $dsnString = $_ENV['MAILER_DSN']
+            ?? throw new \RuntimeException('Mailer not configured.');
+
+        $dsn = MailerDsn::fromString($dsnString);
         $transport = (new SesTransportFactory())->create($dsn);
 
         return new Mailer($transport);
@@ -139,11 +142,10 @@ return [
 
     // PSR-6 cache
     CacheItemPoolInterface::class => static function (
-        Logger $logger,
-        Environment $env
+        Logger $logger
     ) {
         $cacheInterface = new FilesystemAdapter(
-            directory: $env->getTempDirectory() . '/cache'
+            directory: Environment::getTempDirectory() . '/cache'
         );
         $cacheInterface->setLogger($logger);
         return $cacheInterface;
@@ -153,10 +155,10 @@ return [
     CacheInterface::class => static fn(CacheItemPoolInterface $psr6Cache) => new Psr16Cache($psr6Cache),
 
     // PSR Logger
-    Logger::class => function (Environment $env) {
+    Logger::class => function () {
         $logger = new Logger('site');
 
-        $loggingLevel = $env->isProduction()
+        $loggingLevel = Environment::isProduction()
             ? LogLevel::Warning
             : LogLevel::Debug;
 

@@ -15,9 +15,7 @@ final readonly class GetPosterAction
 {
     public function __construct(
         private Connection $db,
-        private CacheInterface $cache,
-        private Environment $environment,
-        private Media $media,
+        private CacheInterface $cache
     ) {
     }
 
@@ -122,7 +120,7 @@ final readonly class GetPosterAction
         $image = null;
 
         if (!empty($post)) {
-            $fs = $this->media->getFilesystem();
+            $fs = Media::getFilesystem();
 
             $tryPaths = [
                 '/img/posters/' . $post['file'] . '_full.jpg',
@@ -154,7 +152,7 @@ final readonly class GetPosterAction
         // Default poster if no other image is found.
         if (null === $image) {
             $image = file_get_contents(
-                $this->environment->getBaseDirectory() . '/web/static/img/no_poster.jpg'
+                Environment::getBaseDirectory() . '/web/static/img/no_poster.jpg'
             );
         }
 

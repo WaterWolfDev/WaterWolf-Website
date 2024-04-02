@@ -19,9 +19,7 @@ final class View extends Engine
     private GlobalSections $sections;
 
     public function __construct(
-        Environment $environment,
-        RouteParserInterface $router,
-        Media $media
+        RouteParserInterface $router
     ) {
         parent::__construct(
             dirname(__DIR__) . '/templates',
@@ -35,9 +33,7 @@ final class View extends Engine
         $this->addData(
             [
                 'sections' => $this->sections,
-                'environment' => $environment,
                 'router' => $router,
-                'media' => $media,
             ]
         );
     }

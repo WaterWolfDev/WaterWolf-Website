@@ -12,12 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand('migrate', 'Update the database to the latest migration version.')]
 final class MigrateCommand extends AbstractCommand
 {
-    public function __construct(
-        private readonly Environment $environment
-    ) {
-        parent::__construct();
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $phinx = new PhinxApplication();
@@ -26,7 +20,7 @@ final class MigrateCommand extends AbstractCommand
         $arguments = [
             'command' => 'migrate',
             '--environment' => 'db',
-            '--configuration' => $this->environment->getBaseDirectory() . '/phinx.php',
+            '--configuration' => Environment::getBaseDirectory() . '/phinx.php',
         ];
 
         return $command->run(new ArrayInput($arguments), $output);

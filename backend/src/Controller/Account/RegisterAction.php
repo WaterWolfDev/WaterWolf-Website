@@ -12,7 +12,6 @@ use Psr\Http\Message\ResponseInterface;
 final readonly class RegisterAction
 {
     public function __construct(
-        private Environment $environment,
         private Connection $db,
         private Discord $discord
     ) {
@@ -84,7 +83,7 @@ final readonly class RegisterAction
                 $session->regenerate();
 
                 $this->discord->sendMessage(
-                    $this->environment->getDiscordWebookUrl(),
+                    $_ENV['DISCORD_WEBHOOK_URL'],
                     '',
                     hexdec('00FF00'),
                     'New User Created on WaterWolf Website',

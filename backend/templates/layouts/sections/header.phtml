@@ -2,7 +2,6 @@
 /**
  * @var League\Plates\Template\Template $this
  * @var App\View\GlobalSections $sections
- * @var App\Environment $environment
  */
 
 ?>
@@ -20,7 +19,7 @@
 <meta name="darkreader-lock">
 
 <?php
-if ($environment->isProduction()): ?>
+if (App\Environment::isProduction()): ?>
     <link rel="icon" type="image/png" sizes="192x192" href="/static/img/favicon/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/static/img/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="/static/img/favicon/favicon-96x96.png">

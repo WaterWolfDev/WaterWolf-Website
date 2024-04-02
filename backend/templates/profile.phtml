@@ -1,7 +1,6 @@
 <?php
 /**
  * @var League\Plates\Template\Template $this
- * @var App\Media $media
  * @var array $profile
  */
 
@@ -22,7 +21,7 @@ if (!empty($website) && !str_starts_with($website, 'http')) {
                     <div class="card-body">
                         <div class="d-flex flex-column align-items-center text-center">
                             <div class="ts-profile-picture"
-                                 style="background-image: url('<?= $media->avatarUrl($profile['user_img']) ?>')">
+                                 style="background-image: url('<?=avatarUrl($profile['user_img']) ?>')">
                             </div>
                             <div class="mt-3">
                                 <h1><?= escapeHtml($profile['username']) ?></h1>

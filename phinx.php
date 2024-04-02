@@ -5,10 +5,9 @@
 
 require (__DIR__) . '/vendor/autoload.php';
 
-$env = new App\Environment($_ENV);
-$dbInfo = $env->getDatabaseInfo();
+$dbInfo = App\Environment::getDatabaseInfo();
 
-$di = App\AppFactory::buildContainer($env);
+$di = App\AppFactory::buildContainer();
 $db = $di->get(Doctrine\DBAL\Connection::class);
 
 return

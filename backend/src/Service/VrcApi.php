@@ -8,7 +8,6 @@ use GuzzleHttp\Client;
 final readonly class VrcApi
 {
     public function __construct(
-        private Environment $environment,
         private Client $http
     ) {
     }
@@ -35,7 +34,7 @@ final readonly class VrcApi
 
         $requestConfig = [
             'headers' => [
-                'Authorization' => $this->environment->getVrcApiKey(),
+                'Authorization' => $_ENV['VRCHAT_API_KEY'],
             ],
         ];
 

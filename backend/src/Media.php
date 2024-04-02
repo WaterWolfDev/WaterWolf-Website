@@ -2,64 +2,68 @@
 
 namespace App;
 
+use Aws\S3\S3Client;
+use GuzzleHttp\Psr7\Uri;
+use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Config;
 use League\Flysystem\Filesystem;
+use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 
 final class Media
 {
-    private ?Filesystem $fs = null;
-
-    public function __construct(
-        private readonly Environment $environment
-    ) {
-    }
-
-    public function getFilesystem(): Filesystem
+    public static function getFilesystem(): Filesystem
     {
-        if (null === $this->fs) {
-            $adapter = new LocalFilesystemAdapter(
-                $this->environment->getMediaPath()
-            );
+        static $fs;
 
-            $this->fs = new Filesystem(
+        if (!$fs) {
+            $adapter = (Environment::isProduction() && !empty($_ENV['MEDIA_REPOSITORY']))
+                ? self::getRemoteAdapter()
+                : self::getLocalAdapter();
+
+            return new Filesystem(
                 $adapter,
-                config: [
-                    'base_url' => $this->environment->getMediaUrl(),
-                ],
                 publicUrlGenerator: new class implements PublicUrlGenerator {
                     public function publicUrl(string $path, Config $config): string
                     {
-                        $baseUrl = $config->get('base_url');
-                        $url = implode("/", array_map("rawurlencode", explode("/", $path)));
-                        return $baseUrl . '/' . ltrim($url, '/');
+                        return mediaUrl($path);
                     }
                 }
             );
         }
 
-        return $this->fs;
+        return $fs;
     }
 
-    public function mediaUrl(string $url): string
+    private static function getLocalAdapter(): FilesystemAdapter
     {
-        return $this->getFilesystem()->publicUrl($url);
+        return new LocalFilesystemAdapter(
+            $_ENV['PHP_MEDIA_PATH']
+        );
     }
 
-    public function avatarUrl(string|bool|null $userImg): string
+    private static function getRemoteAdapter(): FilesystemAdapter
     {
-        return (!empty($userImg))
-            ? $this->mediaUrl('/img/profile/' . $userImg)
-            : '/static/img/avatar.webp';
-    }
+        $key = $_ENV['AWS_ACCESS_KEY_ID'] ?? null;
+        $secret = $_ENV['AWS_SECRET_ACCESS_KEY'] ?? null;
+        $dsn = $_ENV['MEDIA_REPOSITORY'] ?? null;
 
-    public function djAvatarUrl(
-        string|bool|null $djImg,
-        string|bool|null $userImg
-    ): string {
-        return (!empty($djImg))
-            ? $this->mediaUrl('/img/djs/' . $djImg)
-            : $this->avatarUrl($userImg);
+        if (empty($key) || empty($secret) || empty($dsn)) {
+            throw new \InvalidArgumentException('S3 credentials not configured.');
+        }
+
+        $dsnParsed = new Uri(str_replace('s3:', '', $dsn));
+
+        $s3Client = new S3Client([
+            'credentials' => [
+                'key' => $key,
+                'secret' => $secret,
+            ],
+            'region' => 'auto',
+            'endpoint' => $dsnParsed->getScheme() . '://' . $dsnParsed->getHost(),
+        ]);
+
+        return new AwsS3V3Adapter($s3Client, ltrim($dsnParsed->getPath(), '/'));
     }
 }

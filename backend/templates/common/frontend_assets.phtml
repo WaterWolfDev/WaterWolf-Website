@@ -2,15 +2,14 @@
 /**
  * @var League\Plates\Template\Template $this
  * @var App\View\GlobalSections $sections
- * @var App\Environment $environment
  * @var string $component
  */
 
 $assetRoot = '/static/dist';
 
-if ($environment->isProduction()) {
+if (App\Environment::isProduction()) {
     // Convert from the Vite manifest format into HTML header tags.
-    $manifestFile = $environment->getBaseDirectory() . '/web/static/dist/.vite/manifest.json';
+    $manifestFile = App\Environment::getBaseDirectory() . '/web/static/dist/.vite/manifest.json';
     $vueComponents = json_decode(
         file_get_contents($manifestFile),
         true,

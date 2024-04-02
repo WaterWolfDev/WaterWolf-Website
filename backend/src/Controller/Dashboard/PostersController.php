@@ -16,8 +16,7 @@ final readonly class PostersController
 {
     public function __construct(
         private Connection $db,
-        private ImageManager $imageManager,
-        private Media $media,
+        private ImageManager $imageManager
     ) {
     }
 
@@ -70,8 +69,7 @@ final readonly class PostersController
 
         $nowDt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
-        $fs = $this->media->getFilesystem();
-
+        $fs = Media::getFilesystem();
         foreach ($qb->fetchAllAssociative() as $poster) {
             // Get poster URL
             $tryMediaUrls = [
@@ -83,7 +81,7 @@ final readonly class PostersController
 
             foreach ($tryMediaUrls as $tryMediaUrl) {
                 if ($fs->has($tryMediaUrl)) {
-                    $mediaUrl = $this->media->mediaUrl($tryMediaUrl);
+                    $mediaUrl = mediaUrl($tryMediaUrl);
                     break;
                 }
             }
@@ -389,7 +387,7 @@ final readonly class PostersController
             '_590x1000.jpeg',
         ];
 
-        $fs = $this->media->getFilesystem();
+        $fs = Media::getFilesystem();
 
         foreach ($sizes as $size) {
             $filePath = '/img/posters/' . $posterFile . $size;
@@ -411,8 +409,7 @@ final readonly class PostersController
             [590, 1000, $basename . '_full.jpg'],
         ];
 
-        $fs = $this->media->getFilesystem();
-
+        $fs = Media::getFilesystem();
         foreach ($sizes as [$width, $height, $filename]) {
             $thumbnail = clone $image;
             $thumbnail->cover($width, $height);

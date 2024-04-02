@@ -9,7 +9,6 @@ use Psr\Log\LoggerInterface;
 final readonly class Discord
 {
     public function __construct(
-        private Environment $environment,
         private LoggerInterface $logger,
         private Client $http
     ) {
@@ -28,7 +27,7 @@ final readonly class Discord
             func_get_args()
         );
 
-        if (!$this->environment->isProduction()) {
+        if (!Environment::isProduction()) {
             return '';
         }
 
