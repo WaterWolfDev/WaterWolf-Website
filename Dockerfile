@@ -14,7 +14,9 @@ RUN apk add --no-cache zip git curl bash \
     caddy \
     nodejs npm \
     supercronic \
-    su-exec
+    su-exec \
+    mariadb-client \
+    restic
 
 # Set up App user
 RUN mkdir -p /var/app/www \

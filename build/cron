@@ -1,1 +1,2 @@
 0 0 * * * * * app_cli sync
+0 4 * * * app_cli backup

@@ -10,7 +10,6 @@ use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
-use Nyholm\Dsn\DsnParser;
 
 final class Media
 {
@@ -19,14 +18,9 @@ final class Media
         static $fs;
 
         if (!$fs) {
-            $adapter = self::getLocalAdapter();
-
-            /*
-             * TODO: Switch to S3.
-            $adapter = (true || $this->environment->isProduction())
-                ? $this->getRemoteAdapter()
-                : $this->getLocalAdapter();
-             */
+            $adapter = (Environment::isProduction() && !empty($_ENV['MEDIA_REPOSITORY']))
+                ? self::getRemoteAdapter()
+                : self::getLocalAdapter();
 
             return new Filesystem(
                 $adapter,
@@ -49,7 +43,6 @@ final class Media
         );
     }
 
-    /*
     private static function getRemoteAdapter(): FilesystemAdapter
     {
         $key = $_ENV['AWS_ACCESS_KEY_ID'] ?? null;
@@ -73,5 +66,4 @@ final class Media
 
         return new AwsS3V3Adapter($s3Client, ltrim($dsnParsed->getPath(), '/'));
     }
-    */
 }

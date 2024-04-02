@@ -56,6 +56,8 @@ final class AppFactory
 
     private static function applyPhpSettings(): void
     {
+        $_ENV = getenv();
+
         error_reporting(
             Environment::isProduction()
                 ? E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED

@@ -86,6 +86,7 @@ return [
         $commandLoader = new ContainerCommandLoader(
             $di,
             [
+                'backup' => App\Console\Command\BackupCommand::class,
                 'init' => App\Console\Command\InitCommand::class,
                 'migrate' => App\Console\Command\MigrateCommand::class,
                 'seed' => App\Console\Command\SeedCommand::class,
