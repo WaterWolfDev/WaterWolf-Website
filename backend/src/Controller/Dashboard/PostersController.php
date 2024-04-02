@@ -9,6 +9,7 @@ use App\Media;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Intervention\Image\ImageManager;
+use League\Flysystem\StorageAttributes;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
@@ -69,18 +70,31 @@ final readonly class PostersController
 
         $nowDt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
+        // Iterate files in the poster uploads directory once to avoid a bunch of repeat calls.
         $fs = Media::getFilesystem();
+
+        $posterFiles = [];
+
+        /** @var StorageAttributes $posterFile */
+        foreach ($fs->listContents('img/posters/') as $posterFile) {
+            if (!$posterFile->isFile()) {
+                continue;
+            }
+
+            $posterFiles[$posterFile->path()] = $posterFile->path();
+        }
+
         foreach ($qb->fetchAllAssociative() as $poster) {
             // Get poster URL
             $tryMediaUrls = [
-                '/img/posters/' . urlencode($poster['file']) . '_thumb.jpg',
-                '/img/posters/' . urlencode($poster['file']) . '_150x200.jpeg',
+                'img/posters/' . urlencode($poster['file']) . '_thumb.jpg',
+                'img/posters/' . urlencode($poster['file']) . '_150x200.jpeg',
             ];
 
             $mediaUrl = '/static/img/no_poster_thumb.jpg';
 
             foreach ($tryMediaUrls as $tryMediaUrl) {
-                if ($fs->has($tryMediaUrl)) {
+                if (isset($posterFiles[$tryMediaUrl])) {
                     $mediaUrl = mediaUrl($tryMediaUrl);
                     break;
                 }
