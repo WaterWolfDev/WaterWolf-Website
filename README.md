@@ -92,17 +92,15 @@ make bash-root
 
 Static assets used by the web site are stored inside this repository and can be referenced directly via `/static` links.
 
-User-uploaded content should instead be stored in the media storage subsystem, which resolves in
-production to `media.waterwolf.town`.
+User-uploaded content is stored in `/web/media/site` in local development and in a Cloudflare R2 repository in
+production, which resolves to `uploads.waterwolf.club`.
 
-`media.waterwolf.town` structure.
-- site/        ->   `# Website assets`
-  - css/
-  - js/
-  - img/
-  - video/
-  - uploads/   ->   `# User generated assets`
-- public/      ->   `# Long-term file sharing`
-  - unity/
-  - video/
-  - img/
+`uploads.waterwolf.club` structure:
+
+```
+img/
+  djs/ # DJ Avatars
+  posters/ # Posters
+  profile/ # Main Avatars
+  worlds/ # World screenshots
+```
