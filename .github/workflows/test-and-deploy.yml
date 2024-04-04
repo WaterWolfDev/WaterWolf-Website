@@ -15,6 +15,8 @@ jobs:
                 php-version: '8.3'
                 extensions: intl, xdebug
                 tools: composer:v2, cs2pr
+              env:
+                runner: self-hosted
 
             - name: Cache PHP dependencies
               uses: actions/cache@v4
