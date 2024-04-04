@@ -48,7 +48,7 @@ function mediaUrl(string $url): string
 function avatarUrl(string|bool|null $userImg): string
 {
     return (!empty($userImg))
-        ? mediaUrl('/img/profile/' . $userImg)
+        ? mediaUrl(App\Media::avatarPath($userImg))
         : '/static/img/avatar.webp';
 }
 
@@ -57,7 +57,7 @@ function djAvatarUrl(
     string|bool|null $userImg
 ): string {
     return (!empty($djImg))
-        ? mediaUrl('/img/djs/' . $djImg)
+        ? mediaUrl(App\Media::djAvatarPath($djImg))
         : avatarUrl($userImg);
 }
 

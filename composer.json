@@ -3,7 +3,7 @@
   "type": "project",
   "description": "The new WaterWolf web site.",
   "require": {
-    "php": "^8.2",
+    "php": "^8.3",
     "ext-curl": "*",
     "ext-fileinfo": "*",
     "ext-gd": "*",

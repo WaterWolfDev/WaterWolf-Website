@@ -27,7 +27,7 @@ final readonly class GetPosterAction
         $posterId = $params['id'] ?? $request->getParam('pid', $request->getParam('id'));
 
         $qb = $this->db->createQueryBuilder()
-            ->select('p.id', 'p.file')
+            ->select('p.id', 'p.full_path')
             ->from('web_posters', 'p')
             ->join('p', 'web_users', 'u', 'p.creator = u.id')
             ->where('u.banned != 1')
@@ -121,19 +121,10 @@ final readonly class GetPosterAction
 
         if (!empty($post)) {
             $fs = Media::getFilesystem();
-
-            $tryPaths = [
-                '/img/posters/' . $post['file'] . '_full.jpg',
-                '/img/posters/' . $post['file'] . '_590x1000.jpeg',
-            ];
-
-            foreach ($tryPaths as $tryPath) {
-                try {
-                    $image = $fs->read($tryPath);
-                    break;
-                } catch (FilesystemException) {
-                    // Noop
-                }
+            try {
+                $image = $fs->read(Media::posterPath($post['full_path']));
+            } catch (FilesystemException) {
+                // Noop
             }
 
             // Update view count
