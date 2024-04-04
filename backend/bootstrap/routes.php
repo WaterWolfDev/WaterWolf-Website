@@ -45,12 +45,6 @@ return function (Slim\App $app) {
 
             $group->map(
                 ['GET', 'POST'],
-                '/dmx',
-                App\Controller\Dashboard\DmxController::class
-            )->setName('dashboard:dmx');
-
-            $group->map(
-                ['GET', 'POST'],
                 '/password',
                 App\Controller\Dashboard\PasswordAction::class
             )->setName('dashboard:password');
