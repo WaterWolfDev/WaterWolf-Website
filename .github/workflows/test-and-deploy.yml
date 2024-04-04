@@ -9,6 +9,13 @@ jobs:
         steps:
             - uses: actions/checkout@master
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: '8.3'
+                extensions: intl, xdebug
+                tools: composer:v2, cs2pr
+
             - name: Cache PHP dependencies
               uses: actions/cache@v4
               with:
@@ -22,15 +29,15 @@ jobs:
 
             - name : Run PHP Linter
               run : |
-                  vendor/bin/parallel-lint . --exclude vendor --checkstyle | vendor/bin/cs2pr
+                vendor/bin/parallel-lint . --exclude vendor --checkstyle | cs2pr
 
             - name : Run PHPStan
               run : |
-                  vendor/bin/phpstan analyze --memory-limit=-1 --error-format=checkstyle | vendor/bin/cs2pr
+                vendor/bin/phpstan analyze --memory-limit=-1 --error-format=checkstyle | cs2pr
 
             - name : Run PHP Code Sniffer
               run : |
-                  vendor/bin/phpcs --report=checkstyle | vendor/bin/cs2pr
+                vendor/bin/phpcs --report=checkstyle | cs2pr
 
     publish:
         name: Publish
