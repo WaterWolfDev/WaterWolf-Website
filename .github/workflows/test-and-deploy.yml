@@ -19,7 +19,7 @@ jobs:
                 username: ${{ github.repository_owner }}
                 password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Publish to Docker Image Repo
+            - name: Build Test Image
               uses: docker/build-push-action@v5
               with:
                 context: .
@@ -30,7 +30,7 @@ jobs:
 
             - name: Run CI Test Suite
               run: |
-                docker run --rm -it waterwolf-site:dev app_ci
+                docker run --rm waterwolf-site:dev app_ci
 
     publish:
         name: Publish
