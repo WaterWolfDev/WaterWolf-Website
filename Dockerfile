@@ -69,7 +69,7 @@ CMD ["supervisord", "-c", "/etc/supervisord.conf"]
 #
 FROM base AS testing
 
-COPY ./build/dev/entrypoint.sh /var/app/entrypoint.sh
+COPY ./build/testing/entrypoint.sh /var/app/entrypoint.sh
 RUN chmod a+x /var/app/entrypoint.sh
 
 USER root
