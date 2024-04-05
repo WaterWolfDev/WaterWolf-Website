@@ -23,14 +23,14 @@ jobs:
               uses: docker/build-push-action@v5
               with:
                 context: .
-                target: development
+                target: testing
                 load: true
-                tags: waterwolf-site:dev
+                tags: waterwolf-site:testing
                 cache-from: type=registry,ref=ghcr.io/waterwolfdev/waterwolf-site:buildcache,mode=max
 
             - name: Run CI Test Suite
               run: |
-                docker run --rm waterwolf-site:dev app_ci
+                docker run --rm waterwolf-site:testing app_ci
 
     publish:
         name: Publish

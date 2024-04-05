@@ -65,7 +65,6 @@
       "@phpcs"
     ],
     "ci": [
-      "@composer install",
       "parallel-lint . --exclude vendor --checkstyle | cs2pr",
       "phpstan analyze --memory-limit=-1 --error-format=checkstyle | cs2pr",
       "phpcs --report=checkstyle | cs2pr"
