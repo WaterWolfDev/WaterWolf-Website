@@ -20,7 +20,7 @@ $this->layout('layouts::site');
                     </div>
                     <div class="flex-fill">
                         <h2><?= escapeHtml($user['username']) ?></h2>
-                        <div class="badges text-center">
+                        <div class="badges">
                             <?php
                             $pronouns = trim($user['pronouns'] ?? '');
                             if (!empty($pronouns)) : ?>
@@ -73,10 +73,6 @@ $this->layout('layouts::site');
                             <a class="list-group-item list-group-item-action"
                                href="<?= $router->urlFor('dashboard:skills') ?>">
                                 <i class="bi-stars"></i> My Skills
-                            </a>
-                            <a class="list-group-item list-group-item-action"
-                               href="<?= $router->urlFor('dashboard:dmx') ?>">
-                                <i class="bi-lightbulb-fill"></i> DMX Lights
                             </a>
 
                             <?php if ($user->isMod()): ?>

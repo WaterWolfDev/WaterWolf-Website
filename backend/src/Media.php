@@ -13,6 +13,11 @@ use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 
 final class Media
 {
+    public const string AVATARS_DIR = 'img/profile';
+    public const string DJ_AVATARS_DIR = 'img/djs';
+    public const string POSTERS_DIR = 'img/posters';
+    public const string WORLDS_DIR = 'img/worlds';
+
     public static function getFilesystem(): Filesystem
     {
         static $fs;
@@ -65,5 +70,25 @@ final class Media
         ]);
 
         return new AwsS3V3Adapter($s3Client, ltrim($dsnParsed->getPath(), '/'));
+    }
+
+    public static function avatarPath(string $path): string
+    {
+        return self::AVATARS_DIR . '/' . ltrim($path, '/');
+    }
+
+    public static function djAvatarPath(string $path): string
+    {
+        return self::DJ_AVATARS_DIR . '/' . ltrim($path, '/');
+    }
+
+    public static function posterPath(string $path): string
+    {
+        return self::POSTERS_DIR . '/' . ltrim($path, '/');
+    }
+
+    public static function worldPath(string $path): string
+    {
+        return self::WORLDS_DIR . '/' . ltrim($path, '/');
     }
 }

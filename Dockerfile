@@ -65,6 +65,21 @@ ENTRYPOINT ["/var/app/entrypoint.sh"]
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
 
 #
+# CI/Testing Build
+#
+FROM base AS testing
+
+COPY ./build/testing/entrypoint.sh /var/app/entrypoint.sh
+RUN chmod a+x /var/app/entrypoint.sh
+
+USER root
+
+ENV APPLICATION_ENV=testing
+
+ENTRYPOINT ["/var/app/entrypoint.sh"]
+CMD ["app_ci"]
+
+#
 # Production Build
 #
 FROM base AS production

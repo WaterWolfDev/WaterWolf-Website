@@ -68,7 +68,7 @@ final readonly class AddWorldAction
                     ? $this->http->get($worldData['image'])->getBody()->getContents()
                     : $worldData['image'];
 
-                $imageRelativePath = '/img/worlds/' . $worldDbTitle . '.png';
+                $imageRelativePath = Media::worldPath($worldDbTitle . '.png');
 
                 $image = $this->imageManager->read($imageData);
 

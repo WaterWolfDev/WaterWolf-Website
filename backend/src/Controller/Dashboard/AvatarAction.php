@@ -8,8 +8,8 @@ use App\Media;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Psr7\UploadedFile;
 use Intervention\Image\ImageManager;
+use League\Flysystem\UnableToDeleteFile;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class AvatarAction
 {
@@ -37,8 +37,8 @@ final readonly class AvatarAction
         };
 
         $uploadFolder = match ($type) {
-            'dj' => '/img/djs',
-            default => '/img/profile'
+            'dj' => Media::DJ_AVATARS_DIR,
+            default => Media::AVATARS_DIR
         };
 
         if ($request->isPost()) {
@@ -54,8 +54,11 @@ final readonly class AvatarAction
             // Remove existing image if it's set.
             if (!empty($currentUser[$avatarField])) {
                 $currentImage = $uploadFolder . '/' . $currentUser[$avatarField];
-                if ($fs->has($currentImage)) {
+
+                try {
                     $fs->delete($currentImage);
+                } catch (UnableToDeleteFile) {
+                    // Noop
                 }
             }
 

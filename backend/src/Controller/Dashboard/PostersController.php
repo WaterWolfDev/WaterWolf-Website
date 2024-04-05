@@ -9,7 +9,7 @@ use App\Media;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 use Intervention\Image\ImageManager;
-use League\Flysystem\StorageAttributes;
+use League\Flysystem\UnableToDeleteFile;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
@@ -70,34 +70,12 @@ final readonly class PostersController
 
         $nowDt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
-        // Iterate files in the poster uploads directory once to avoid a bunch of repeat calls.
-        $fs = Media::getFilesystem();
-
-        $posterFiles = [];
-
-        /** @var StorageAttributes $posterFile */
-        foreach ($fs->listContents('img/posters/') as $posterFile) {
-            if (!$posterFile->isFile()) {
-                continue;
-            }
-
-            $posterFiles[$posterFile->path()] = $posterFile->path();
-        }
-
         foreach ($qb->fetchAllAssociative() as $poster) {
             // Get poster URL
-            $tryMediaUrls = [
-                'img/posters/' . urlencode($poster['file']) . '_thumb.jpg',
-                'img/posters/' . urlencode($poster['file']) . '_150x200.jpeg',
-            ];
-
-            $mediaUrl = '/static/img/no_poster_thumb.jpg';
-
-            foreach ($tryMediaUrls as $tryMediaUrl) {
-                if (isset($posterFiles[$tryMediaUrl])) {
-                    $mediaUrl = mediaUrl($tryMediaUrl);
-                    break;
-                }
+            if (!empty($poster['thumb_path'])) {
+                $mediaUrl = mediaUrl(Media::posterPath($poster['thumb_path']));
+            } else {
+                $mediaUrl = '/static/img/no_poster_thumb.jpg';
             }
             $poster['mediaUrl'] = $mediaUrl;
 
@@ -156,10 +134,8 @@ final readonly class PostersController
                 /** @var UploadedFileInterface $file */
                 $file = $files['fileToUpload'];
 
-                $basename = $this->generateAssets($file);
-
+                $row = $this->generateAssets($file);
                 $row['creator'] = $currentUser['id'];
-                $row['file'] = $basename;
 
                 $postData = $request->getParsedBody();
 
@@ -229,8 +205,12 @@ final readonly class PostersController
                     $file = $files['fileToUpload'];
 
                     if ($file->getError() === UPLOAD_ERR_OK) {
-                        $this->deleteAssets($row['file']);
-                        $row['file'] = $this->generateAssets($files['fileToUpload']);
+                        $this->deleteAssets($row);
+
+                        $row = [
+                            ...$row,
+                            ...$this->generateAssets($files['fileToUpload']),
+                        ];
                     }
                 }
 
@@ -301,7 +281,7 @@ final readonly class PostersController
         $id = $params['id'] ?? $request->getParam('pid');
         $row = $this->getEditablePoster($request, $id);
 
-        $this->deleteAssets($row['file']);
+        $this->deleteAssets($row);
 
         $this->db->delete(
             'web_posters',
@@ -391,36 +371,51 @@ final readonly class PostersController
         return $row;
     }
 
-    private function deleteAssets(string $posterFile): void
+    private function deleteAssets(array $poster): void
     {
-        $sizes = [
-            '_thumb.jpg',
-            '_full.jpg',
-            '_300x500.jpeg',
-            '_150x200.jpeg',
-            '_590x1000.jpeg',
-        ];
-
         $fs = Media::getFilesystem();
 
-        foreach ($sizes as $size) {
-            $filePath = '/img/posters/' . $posterFile . $size;
-            if ($fs->has($filePath)) {
-                $fs->delete($filePath);
+        if (!empty($poster['full_path'])) {
+            $fullPath = Media::posterPath($poster['full_path']);
+
+            try {
+                $fs->delete($fullPath);
+            } catch (UnableToDeleteFile) {
+                // Noop
+            }
+        }
+
+        if (!empty($poster['thumb_path'])) {
+            $thumbPath = Media::posterPath($poster['thumb_path']);
+
+            try {
+                $fs->delete($thumbPath);
+            } catch (UnableToDeleteFile) {
+                // Noop
             }
         }
     }
 
-    private function generateAssets(UploadedFileInterface $filePath): string
+    /**
+     * @return array{
+     *     file: string,
+     *     full_path: string,
+     *     thumb_path: string
+     * }
+     */
+    private function generateAssets(UploadedFileInterface $filePath): array
     {
         $image = $this->imageManager->read($filePath->getStream()->getContents());
 
         // Create a random 12 digit hash for file name
         $basename = bin2hex(random_bytes(6)); // 6 bytes = 12 hex characters
 
+        $fullPath = $basename . '_full.jpg';
+        $thumbPath = $basename . '_thumb.jpg';
+
         $sizes = [
-            [118, 200, $basename . '_thumb.jpg'],
-            [590, 1000, $basename . '_full.jpg'],
+            [118, 200, $thumbPath],
+            [590, 1000, $fullPath],
         ];
 
         $fs = Media::getFilesystem();
@@ -428,10 +423,14 @@ final readonly class PostersController
             $thumbnail = clone $image;
             $thumbnail->cover($width, $height);
 
-            $destPath = '/img/posters/' . $filename;
+            $destPath = Media::posterPath($filename);
             $fs->write($destPath, $thumbnail->encodeByPath($destPath)->toString());
         }
 
-        return $basename;
+        return [
+            'file' => $basename,
+            'full_path' => $fullPath,
+            'thumb_path' => $thumbPath,
+        ];
     }
 }
