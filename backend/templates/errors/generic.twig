@@ -1,0 +1,14 @@
+{% extends "layouts/site.twig" %}
+
+{% block content %}
+    <div class="container page">
+        <div class="card mx-auto" style="max-width: 400px;">
+            <div class="card-header">
+                <h2 class="card-title m-0">Error</h2>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ exception.getMessage() }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

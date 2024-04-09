@@ -1,0 +1,130 @@
+{% extends "layouts/dashboard.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+
+{% import "macros/forms.twig" as forms %}
+
+{% block content %}
+    {{ breadcrumbs.body(
+        {
+            'dashboard': 'My Dashboard',
+            'dashboard:posters': 'Poster Network'
+        },
+        (isEditMode) ? 'Edit Poster' : 'Upload New Poster'
+    ) }}
+
+    <h1>Poster Network</h1>
+
+    <div class="card">
+        <h2 class="card-header">
+            {% if isEditMode %}
+            Edit Poster
+            {% else %}
+            Upload New Poster
+            {% endif %}
+        </h2>
+        <div class="card-body">
+            {% if error %}
+                <div class="alert alert-danger">
+                    <b>Error:</b> {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="post" action="" enctype="multipart/form-data">
+                <div class="row mb-2">
+                    <div class="col-6">
+                        <div class="form-group mb-2">
+                            {% if isEditMode %}
+                            <label class="form-label" for="fileToUpload">
+                                Replace Poster File:
+                            </label>
+                            {% else %}
+                            <label class="form-label" for="fileToUpload">
+                                Select Poster File:
+                            </label>
+                            {% endif %}
+
+                            <input class="form-control" type="file" name="fileToUpload" id="fileToUpload"
+                                   accept="image/*">
+
+                            {% if isEditMode %}
+                            <p class="form-text">
+                                To replace the existing poster, upload a new file here. Otherwise, leave this field
+                                blank.
+                            </p>
+                            {% else %}
+                            <p class="form-text">
+                                Most image formats accepted.<br>
+                                The picture will be converted to a JPG and scaled and cropped to 590x1000.
+                            </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label class="form-label" for="type">
+                                Poster Type:
+                            </label>
+
+                            <select class="form-select" name="type" id="type">
+                                {{ forms.options({
+                                    '': 'No Type',
+                                    ...types
+                                }, row.type_id|default('')) }}
+                            </select>
+
+                            <p class="form-text">
+                                Optionally specify the type of poster so worlds can choose whether to display it.
+                            </p>
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label class="form-label" for="expires_at">
+                                Expires at:
+                            </label>
+                            <input class="form-control" type="datetime-local" name="expires_at" id="expires_at"
+                                   value="{{ row.expires_at|default('')|e('html_attr') }}">
+                            <p class="form-text">
+                                Optionally set a time when the poster will automatically expire and won't be displayed.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group mb-2">
+                            <label class="form-label" for="collection">
+                                Poster Collection:
+                            </label>
+                            <input type="text" class="form-control" id="collection" name="collection"
+                                   value="{{ row.collection|default('')|e('html_attr') }}">
+                            <p class="form-text">
+                                Optionally specify the name of a collection that this poster is a part of. Multiple
+                                posters can be in a collection, and world builders can filter posters by the collection
+                                name.
+                            </p>
+                        </div>
+
+                        {% if groups is not empty %}
+                        <div class="form-group mb-2">
+                            <label class="form-label" for="group">
+                                Owning Group:
+                            </label>
+
+                            <select class="form-select" name="group" id="group">
+                                {{ forms.options({
+                                    '': 'No Group',
+                                    ...groups
+                                }, row.group_id|default('')) }}
+                            </select>
+
+                            <p class="form-text">
+                                Optionally upload this poster under a group so everyone in that group can manage it.
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-lg btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

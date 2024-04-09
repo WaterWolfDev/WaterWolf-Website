@@ -1,0 +1,44 @@
+{% extends "layouts/site.twig" %}
+
+{% block content %}
+<div class="container page ts-style ts-team">
+    <h1 class="section-title">Our Team</h1>
+    <div class="row">
+        {% for row in team_members %}
+            <!-- Team member -->
+            <div class="col-xs-12 col-sm-6 col-md-4">
+                <a class="team-member-container"
+                   href="{{ urlFor('profile', {user: row.username}) }}">
+                    <div class="team-member image-flip">
+                        <div class="mainflip flip-0">
+                            <div class="frontside">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <img class="img-fluid" src="{{ avatarUrl(row.user_img) }}" alt="Avatar"
+                                             loading="lazy">
+                                        <h4 class="card-title my-2">
+                                            {{ row.username }}
+                                        </h4>
+                                        {% if row.pronouns is not empty %}
+                                            <div>
+                                                {{ row.pronouns }}
+                                            </div>
+                                        {% endif %}
+                                        {% if row.title is not empty %}
+                                            <div>
+                                                {{ row.title }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <br>
+            </div>
+            <!-- ./Team member -->
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

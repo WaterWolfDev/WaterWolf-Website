@@ -175,9 +175,7 @@ final class ErrorHandler extends SlimErrorHandler
         }
 
         try {
-            $view = $this->view->setRequest($this->request);
-
-            return $view->renderToResponse(
+            return $this->view->renderToResponse(
                 $response,
                 ($this->exception instanceof HttpException)
                     ? 'errors/http'
@@ -186,7 +184,7 @@ final class ErrorHandler extends SlimErrorHandler
                     'exception' => $this->exception,
                 ]
             );
-        } catch (Throwable) {
+        } catch (Throwable $e) {
             return parent::respond();
         }
     }

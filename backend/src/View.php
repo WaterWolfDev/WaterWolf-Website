@@ -6,73 +6,57 @@ namespace App;
 
 use App\Http\Response;
 use App\Http\ServerRequest;
-use App\View\GlobalSections;
-use League\Plates\Engine;
-use League\Plates\Template\Data;
+use App\Twig\EnvironmentAwareExtension;
+use App\Twig\RequestAwareExtension;
+use App\Twig\RouterAwareExtension;
+use App\Twig\ViteManifestExtension;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Interfaces\RouteParserInterface;
-use Slim\Routing\RouteContext;
+use Twig\Environment as TwigEnvironment;
+use Twig\Loader\FilesystemLoader;
+use Twig\RuntimeLoader\ContainerRuntimeLoader;
 
-final class View extends Engine
+final class View
 {
-    private GlobalSections $sections;
+    private readonly TwigEnvironment $twig;
 
     public function __construct(
-        RouteParserInterface $router
+        ContainerRuntimeLoader $diLoader,
+        RouterAwareExtension $routerAwareExtension,
+        ViteManifestExtension $viteExtension,
+        EnvironmentAwareExtension $envExtension
     ) {
-        parent::__construct(
-            dirname(__DIR__) . '/templates',
-            'phtml'
+        $loader = new FilesystemLoader(
+            dirname(__DIR__) . '/templates'
         );
 
-        $this->sections = new GlobalSections();
+        $this->twig = new TwigEnvironment($loader, [
+            'cache' => Environment::getTempDirectory() . '/templates',
+            'debug' => Environment::isDev(),
+        ]);
 
-        $this->addFolder('layouts', dirname(__DIR__) . '/templates/layouts');
+        $this->twig->addRuntimeLoader($diLoader);
 
-        $this->addData(
-            [
-                'sections' => $this->sections,
-                'router' => $router,
-            ]
-        );
+        $this->twig->addExtension($routerAwareExtension);
+        $this->twig->addExtension($viteExtension);
+        $this->twig->addExtension($envExtension);
     }
 
     public function setRequest(ServerRequestInterface $request): self
     {
-        $view = clone $this;
+        assert($request instanceof ServerRequest);
 
-        $view->addData([
-            'request' => $request,
-        ]);
+        $this->twig->addExtension(new RequestAwareExtension($request));
 
-        if ($request instanceof ServerRequest) {
-            $view->addData([
-                'route' => $request->getAttribute(RouteContext::ROUTE),
-                'session' => $request->getAttribute(ServerRequest::ATTR_SESSION),
-                'csrf' => $request->getAttribute(ServerRequest::ATTR_SESSION_CSRF),
-                'flash' => $request->getAttribute(ServerRequest::ATTR_SESSION_FLASH),
-                'user' => $request->getCurrentUser(),
-                'is_logged_in' => $request->isLoggedIn(),
-            ]);
-        }
-
-        return $view;
+        return $this;
     }
 
-    public function reset(): void
+    public function render(string $name, array $data = []): string
     {
-        $this->sections = new GlobalSections();
-        $this->data = new Data();
-    }
+        $name = str_replace('.twig', '', $name) . '.twig';
 
-    /**
-     * @param string $name
-     * @param array $data
-     */
-    public function fetch(string $name, array $data = []): string
-    {
-        return $this->render($name, $data);
+        $template = $this->twig->load($name);
+        return $template->render($data);
     }
 
     /**

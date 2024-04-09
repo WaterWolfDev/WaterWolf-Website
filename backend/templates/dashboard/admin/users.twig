@@ -1,0 +1,103 @@
+{% extends "layouts/dashboard.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+
+{% block head %}
+    {{ parent() }}
+
+    <script>
+        ready(() => {
+            function filterTable(event) {
+                var filter = event.target.value.toUpperCase();
+                var rows = document.querySelector("#myTable tbody").rows;
+
+                for (var i = 0; i < rows.length; i++) {
+                    var FirstName = rows[i].cells[1].textContent.toUpperCase();
+                    var Address = rows[i].cells[3].textContent.toUpperCase();
+                    var LastName = rows[i].cells[2].textContent.toUpperCase();
+                    if (FirstName.indexOf(filter) > -1 || Address.indexOf(filter) > -1 || LastName.indexOf(filter) > -1) {
+                        rows[i].style.display = "";
+                    } else {
+                        rows[i].style.display = "none";
+                    }
+                }
+            }
+
+            document.querySelector('#myInput').addEventListener('load', filterTable, false);
+            document.querySelector('#myInput').addEventListener('keyup', filterTable, false);
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    {{ breadcrumbs.body(
+        {
+            'dashboard': 'My Dashboard'
+        },
+        'User Management'
+    ) }}
+
+    <h1>User Management</h1>
+
+    <input id="myInput" class="form-control" value="" type="text" Placeholder="Search for Users"/>
+
+    <br>
+
+    <table class="table table-sm table-striped table-bordered align-middle" id="myTable">
+        <thead>
+        <tr>
+            <th scope="col" style="width:10%">UID</th>
+            <th scope="col">Username</th>
+            <th scope="col" style="width:10%">Admin?</th>
+            <th scope="col" style="width:10%">Mod?</th>
+            <th scope="col" style="width:10%">Team?</th>
+            <th scope="col" style="width:10%">DJ?</th>
+            <th scope="col" style="width:10%">Banned?</th>
+            <th scope="col" style="width:15%">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in users %}
+        <tr>
+            <th scope="row">{{ row.id }}</th>
+            <td>{{ row.username }}</td>
+            {% if row.is_admin is same as 1 %}
+                <td class="text-bg-success">Yes</td>
+            {% else %}
+                <td class="text-muted">No</td>
+            {% endif %}
+            {% if row.is_mod is same as 1 %}
+                <td class="text-bg-success">Yes</td>
+            {% else %}
+                <td class="text-muted">No</td>
+            {% endif %}
+            {% if row.is_team is same as 1 %}
+                <td class="text-bg-success">Yes</td>
+            {% else %}
+                <td class="text-muted">No</td>
+            {% endif %}
+            {% if row.is_dj is same as 1 %}
+                <td class="text-bg-success">Yes</td>
+            {% else %}
+                <td class="text-muted">No</td>
+            {% endif %}
+            {% if row.banned is same as 1 %}
+                <td class="text-bg-danger">Yes</td>
+            {% else %}
+                <td class="text-muted">No</td>
+            {% endif %}
+            <td>
+                <a href="{{ urlFor('dashboard:profile', {id: row.id}) }}"
+                   class="btn btn-primary btn-sm">
+                    Edit
+                </a>
+                <a href="{{ urlFor('profile', {user: row.username}) }}"
+                   class="btn btn-secondary btn-sm">
+                    View
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

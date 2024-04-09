@@ -35,13 +35,18 @@ final readonly class GetFaqAction
             SQL
         );
 
+        $exampleGroup = $groups[array_key_last($groups)];
+        $exampleType = $types[array_key_last($types)];
+
         return $request->getView()->renderToResponse(
             $response,
             'posters/faq',
             [
                 'baseUrl' => $baseUrl,
                 'groups' => $groups,
+                'exampleGroup' => $exampleGroup,
                 'types' => $types,
+                'exampleType' => $exampleType,
             ]
         );
     }

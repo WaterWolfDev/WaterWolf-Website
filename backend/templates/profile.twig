@@ -1,0 +1,87 @@
+{% extends "layouts/site.twig" %}
+
+{% import "macros/global_comments.twig" as globalComments %}
+
+{% block head %}
+    {{ parent() }}
+
+    {{ globalComments.head('profile_comment_#{profile.username}') }}
+{% endblock %}
+
+{% block content %}
+<div class="container page ts-style">
+    <div class="main-body">
+        <div class="row gutters-sm">
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex flex-column align-items-center text-center">
+                            <div class="ts-profile-picture"
+                                 style="background-image: url('{{ avatarUrl(profile.user_img) }}')">
+                            </div>
+                            <div class="mt-3">
+                                <h1>{{ profile.username }}</h1>
+                                <div class="badges text-center">
+                                    {% set pronouns = profile.pronouns|trim %}
+                                    {% if pronouns is not empty %}
+                                        <span class="badge text-bg-info">
+                                            {{ pronouns }}
+                                        </span>
+                                    {% endif %}
+
+                                    {% set title = profile.title|trim|default('Team Member') %}
+                                    {% if profile.is_team == 1 %}
+                                        <span class="badge text-bg-success">
+                                            {{ title }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <ul class="list-group">
+                        {% if profile.discord is not empty %}
+                            <li class="list-group-item list-group-item-dark">
+                                <h5>Discord:</h5>
+                                <div>{{ profile.discord }}</div>
+                            </li>
+                        {% endif %}
+
+                        {% if profile.website is not empty %}
+                            <li class="list-group-item list-group-item-dark">
+                                <h5>
+                                    Website:
+                                </h5>
+                                <div>
+                                    {% set website = profile.website %}
+                                    {% set websiteDisplay = website|replace(['http://', 'https://', 'www.'], ['', '', '']) %}
+                                    {% if not (website starts with 'http') %}
+                                        {% set website = "https://#{website}" %}
+                                    {% endif %}
+
+                                    <a href="{{ website|e('html_attr') }}">
+                                        {{ websiteDisplay }}
+                                    </a>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <h4 class="card-header">About Me</h4>
+                    <div class="card-body">
+                        {{ profile.aboutme|nl2br }}
+                    </div>
+                </div>
+
+                {{ globalComments.body() }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

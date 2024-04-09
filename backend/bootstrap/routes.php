@@ -8,6 +8,18 @@ use Slim\Routing\RouteCollectorProxy;
 
 return function (Slim\App $app) {
     /*
+     * Special Event Pages
+     */
+    $app->group('', function (RouteCollectorProxy $group) {
+        $group->get(
+            '/defective',
+            App\Controller\Events\DefectiveAction::class
+        )->setName('defective');
+    })->add(App\Middleware\EnableView::class)
+        ->add(App\Middleware\GetCurrentUser::class)
+        ->add(App\Middleware\EnableSession::class);
+
+    /*
      * View-enabled, user-enabled routes
      */
     $app->group('', function (RouteCollectorProxy $group) {
@@ -110,22 +122,11 @@ return function (Slim\App $app) {
             )->setName('dashboard:skills');
         })->add(new App\Middleware\Auth\RequireLoggedIn());
 
-        $group->get('/defective', View::staticPage('defective/index'))
-            ->setName('defective');
-
-        $group->get('/donate', View::staticPage('donate'))
+        $group->get('/donate', View::staticPage('donate.twig'))
             ->setName('donate');
 
         $group->map(['GET', 'POST'], '/forgot', App\Controller\Account\ForgotAction::class)
             ->setName('forgot');
-
-        $group->group('/foxxcon', function (RouteCollectorProxy $group) {
-            $group->get('', View::staticPage('foxxcon/index'))
-                ->setName('foxxcon');
-
-            $group->get('/instances', View::staticPage('foxxcon/instances'))
-                ->setName('foxxcon:instances');
-        });
 
         $group->get('/live', View::staticPage('live'))
             ->setName('live');

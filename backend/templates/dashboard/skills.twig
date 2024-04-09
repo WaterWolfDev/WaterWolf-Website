@@ -1,0 +1,128 @@
+{% extends "layouts/dashboard.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+
+{% block head %}
+    {{ parent() }}
+
+    <script>
+        const skillLookup = {{ skillLookup|json_encode|raw }};
+
+        ready(() => {
+            const rigNameInput = document.getElementById("skill");
+            const suggestionBox = document.getElementById("suggestion-box");
+
+            rigNameInput.addEventListener("input", async function () {
+                const query = rigNameInput.value;
+                if (query.length === 0) {
+                    suggestionBox.innerHTML = '';
+                    suggestionBox.style.display = 'none';
+                    return;
+                }
+
+                const suggestions = skillLookup.slice().filter(
+                        (value) => value.includes(query)
+                );
+
+                suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
+                suggestionBox.style.display = 'block';
+            });
+        });
+
+        function selectSuggestion(value) {
+            document.getElementById("skill").value = value;
+            document.getElementById("suggestion-box").innerHTML = '';
+            document.getElementById("suggestion-box").style.display = 'none';
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {{ breadcrumbs.body(
+        {
+            'dashboard': 'My Dashboard'
+        },
+        'My Skills'
+    ) }}
+
+    <h1>My Skills</h1>
+
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddFixture">
+        Add New Skill
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="AddFixture">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Add Skill</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <form method="POST" class="form-group">
+                        <label for="rig_name">Skill:</label>
+                        <input type="text" name="skill" class="form-control" id="skill" autocomplete="off" required>
+                        <div id="suggestion-box"></div>
+
+                        <div class="d-grid g-2">
+                            <input type="submit" name="add_fixture" value="Add New Skill" class="btn btn-primary mt-3">
+                        </div>
+
+                        <small>Type out your skills. If Suggestions appear, use them! If none appear, you must have a
+                            unique skill.</small>
+                    </form>
+                </div>
+
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-4">
+            <h2>Your Talent Pool</h2>
+
+            {% for row in myTalents %}
+            <div class="alert alert-success fade show" role="alert">
+                <strong>{{ row.skill }}</strong>
+
+                <div class="float-right">
+                    <form method="POST">
+                        <input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-8">
+            <h2>Community Talent Pool</h2>
+
+            {% for row in communityTalents %}
+                <div class="alert alert-primary fade show" role="alert">
+                    <strong>{{ row.skill }}</strong>
+                    {{ row.occurrences }} Share This Skill.
+
+                    <div class="float-right">
+                        <form method="POST" class="form-group">
+                            <input type="hidden" name="skill" value="{{ row.skill|e('html_attr') }}">
+                            <input type="submit" name="add_fixture" value="Add Skill" class="btn btn-primary btn-sm">
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                No Results
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
