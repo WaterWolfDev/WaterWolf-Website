@@ -51,7 +51,7 @@
                                                  alt="Poster"/>
                                         </a>
 
-                                        {% if groupId is same as '_community' %}
+                                        {% if groupId != '_mine' %}
                                             <div>Creator: {{ poster.username }}</div>
                                         {% endif %}
 
