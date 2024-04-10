@@ -82,7 +82,7 @@
                     </li>
                 </ul>
 
-                {% if is_logged_in is not empty %}
+                {% if request is not empty %}
                 <div class="d-flex">
                     {% if is_logged_in %}
                         <a href="{{ urlFor('dashboard') }}" class="btn btn-success my-2 my-sm-0">
