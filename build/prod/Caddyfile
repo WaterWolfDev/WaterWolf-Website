@@ -1,3 +1,9 @@
+{
+	servers {
+	    trusted_proxies static 172.17.0.0/16
+	}
+}
+
 :8080 {
     root * /var/app/www/web
 
