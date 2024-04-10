@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Environment;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -22,6 +23,12 @@ class ApplyXForwardedProto implements MiddlewareInterface
             $uri = $request->getUri();
             $uri = $uri->withScheme($request->getHeaderLine('X-Forwarded-Proto'));
             $request = $request->withUri($uri);
+        } elseif (Environment::isProduction()) {
+            $uri = $request->getUri();
+            if ($uri->getScheme() !== 'https') {
+                $uri = $uri->withScheme('https');
+                $request = $request->withUri($uri);
+            }
         }
 
         return $handler->handle($request);
