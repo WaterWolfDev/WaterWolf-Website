@@ -57,6 +57,7 @@ return [
 
         // Redirects and updates that should happen before system middleware.
         $app->add(new App\Middleware\RemoveSlashes());
+        $app->add(new App\Middleware\ApplyXForwardedProto());
         $app->add(new App\Middleware\GetRemoteIp());
 
         // Add an error handler for most in-controller/task situations.
