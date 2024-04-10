@@ -1,0 +1,69 @@
+{% extends "layouts/site.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+{% import "macros/global_comments.twig" as globalComments %}
+
+{% block head %}
+    {{ parent() }}
+
+    {{ globalComments.head('world_comment_#{world.id}') }}
+{% endblock %}
+
+{% block content %}
+<div class="container page">
+    {{ breadcrumbs.body(
+        {
+            'worlds': 'Worlds'
+        },
+        world.title
+    ) }}
+
+    <h1>{{ world.title }}</h1>
+    <h2>by {{ world.world_creator }}</h2>
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card mb-3">
+                <img class="card-img" src="{{ mediaUrl(world.image) }}" width=100%/>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-body">
+                    <p class="card-text">{{ world.description }}</p>
+                </div>
+            </div>
+
+            {{ globalComments.body() }}
+        </div>
+
+        <div class="col-md-3">
+            <div class="card mb-3">
+                <h5 class="card-header">Join The World</h5>
+                <div class="card-body">
+                    <div class="d-grid g-2">
+                        <a href="https://vrchat.com/home/launch?worldId={{ world.world_id|e('html_attr') }}"
+                           class="btn btn-primary btn-lg">Join World</a>
+                    </div>
+                </div>
+            </div>
+
+            {% for row in sidebar_worlds %}
+                <div class="card" style="overflow:hidden; height: 70px; margin-bottom: 5px;">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <a href="{{ urlFor('world', {id: row.id}) }}">
+                                <img src="{{ mediaUrl(row.image) }}" style="margin-top:-15px; margin-bottom:15px;"
+                                     height="100px" width="90px">
+                            </a>
+                        </div>
+
+                        <div class="col-lg-8" style="overflow:hidden">
+                            {{ row.title|slice(0, 30) }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

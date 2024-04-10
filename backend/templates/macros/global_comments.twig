@@ -1,0 +1,19 @@
+{% macro body() %}
+    <div id="vue_comments">&nbsp;</div>
+{% endmacro body %}
+
+{% macro head(comment_id) %}
+    {% set props = {
+        location: comment_id,
+        isLoggedIn: is_logged_in,
+        isMod: is_logged_in and user.isMod()
+    } %}
+
+    {{ renderAssets('frontend/vue/comments.js') }}
+    
+    <script>
+        ready(() => {
+            vueComponentComments('#vue_comments', {{ props|json_encode|raw }});
+        })
+    </script>
+{% endmacro head %}

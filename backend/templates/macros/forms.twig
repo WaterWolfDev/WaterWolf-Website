@@ -1,0 +1,8 @@
+{% macro options(optionsArray, selected) %}
+    {% for optionKey, optionText in optionsArray %}
+        <option value="{{ optionKey|e('html_attr') }}"
+                {% if selected == optionKey %}selected{% endif %}>
+            {{ optionText }}
+        </option>
+    {% endfor %}
+{% endmacro %}

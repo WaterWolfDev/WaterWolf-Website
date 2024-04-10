@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    {{ include("layouts/sections/header.twig") }}
+
+    {% block head %}
+        {{ renderAssets('frontend/layout.js') }}
+    {% endblock %}
+</head>
+<body>
+{{ include("layouts/sections/nav.twig") }}
+
+<main id="main">
+    {% block content %}
+
+    {% endblock %}
+</main>
+
+<footer id="footer" class="mt-3">
+    {{ include("layouts/sections/footer.twig") }}
+</footer>
+
+{{ include("layouts/sections/notifications.twig") }}
+</body>
+</html>

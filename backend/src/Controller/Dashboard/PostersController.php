@@ -71,14 +71,6 @@ final readonly class PostersController
         $nowDt = new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
 
         foreach ($qb->fetchAllAssociative() as $poster) {
-            // Get poster URL
-            if (!empty($poster['thumb_path'])) {
-                $mediaUrl = mediaUrl(Media::posterPath($poster['thumb_path']));
-            } else {
-                $mediaUrl = '/static/img/no_poster_thumb.jpg';
-            }
-            $poster['mediaUrl'] = $mediaUrl;
-
             // Calculate poster expiration.
             if ($poster['expires_at']) {
                 $expiresAt = new \DateTimeImmutable($poster['expires_at'], new \DateTimeZone('UTC'));

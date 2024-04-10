@@ -1,0 +1,112 @@
+{% extends "layouts/site.twig" %}
+
+{% block head %}
+    {{ parent() }}
+
+    <script>
+        ready(() => {
+            const tz = {{ tz|json_encode|raw }};
+            let now = nowToDateTime(tz);
+
+            // DJ times
+            document.querySelectorAll('[data-timestamp]').forEach((item) => {
+                const rowDt = timestampToDateTime(item.dataset.timestamp, tz).setZone('system');
+                const rowFromNow = rowDt.diffNow('days');
+
+                let rowText = dateTimeToTimeString(rowDt);
+                if (rowFromNow < 1 && rowFromNow > -1) {
+                    rowText += ' (' + rowDt.toRelative() + ')';
+                }
+
+                item.innerText = rowText;
+            });
+
+            document.getElementById('timeHeader').innerText = 'Time (Local)';
+
+            // Countdown
+            const countDownDate = timestampToDateTime({{ startDate|json_encode|raw }}, tz);
+            let countdown = setInterval(function () {
+                now = nowToDateTime(tz);
+
+                if (countDownDate < now) {
+                    clearInterval(countdown);
+                    document.getElementById("countdown").innerHTML = "EVENT STARTED";
+                } else {
+                    document.getElementById("countdown").innerHTML = countDownDate.toRelative();
+                }
+            }, 1000);
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+<video loading="lazy" loop="loop" autoplay muted="muted" volume="0" class="bg-video">
+    <source src="/static/defective/bg_video.webm" type="video/webm">
+    <source src="/static/defective/bg_video.mp4" type="video/mp4">
+</video>
+
+<div class="content">
+    <div class="text-center fw-bold mb-3">
+        <!-- Logo -->
+        <img src="/static/defective/logo.png" style="max-width: 400px; margin: 75px 0 25px 0;"
+             alt="Defective Equipment">
+
+        <div style="text-shadow: 1px 1px #000" class="my-3">
+            <div class="fs-2 fw-bolder">A VRChat Club Experience by WaterWolf</div>
+            <div class="fs-4">March 9, 2024</div>
+            <div class="fs-5" id="countdown"></div>
+        </div>
+
+        <div class="buttons">
+            <a href="https://www.twitch.tv/waterwolfvr" class="btn btn-lg btn-primary">
+                <i class="bi-twitch" aria-hidden="true"></i> Twitch Stream
+            </a>
+            <a href="{{ urlFor('register') }}" class="btn btn-lg btn-success">
+                <i class="bi-key-fill" aria-hidden="true"></i> Create Account
+            </a>
+            <a href="{{ urlFor('discord') }}" class="btn btn-lg btn-secondary">
+                <i class="bi-discord" aria-hidden="true"></i> Join the Discord
+            </a>
+        </div>
+    </div>
+
+    <div class="container page">
+        <div class="card mb-3">
+            <div class="ratio ratio-16x9">
+                <video id="videoPlayer" class="card-img" width="640" height="360" controls>
+                    <source src="/static/defective/fullvideo.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-header">DJ Lineup</h2>
+            <div class="card-body">
+                <table class="table table-striped table-bordered table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th scope="col">DJ</th>
+                        <th scope="col"><span id="timeHeader">Time</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for dj in djs %}
+                        <tr>
+                            <td>
+                                {{ dj.name }}
+                            </td>
+                            <td>
+                                <time data-timestamp="{{ dj.timestamp|e('html_attr') }}">
+                                    {{ dj.time }}
+                                </time>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

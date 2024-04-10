@@ -5,11 +5,9 @@ namespace App;
 use Aws\S3\S3Client;
 use GuzzleHttp\Psr7\Uri;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
-use League\Flysystem\Config;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\Local\LocalFilesystemAdapter;
-use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 
 final class Media
 {
@@ -27,15 +25,7 @@ final class Media
                 ? self::getRemoteAdapter()
                 : self::getLocalAdapter();
 
-            return new Filesystem(
-                $adapter,
-                publicUrlGenerator: new class implements PublicUrlGenerator {
-                    public function publicUrl(string $path, Config $config): string
-                    {
-                        return mediaUrl($path);
-                    }
-                }
-            );
+            return new Filesystem($adapter);
         }
 
         return $fs;

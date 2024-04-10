@@ -1,0 +1,97 @@
+{% extends "layouts/dashboard.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+
+{% block content %}
+    {{ breadcrumbs.body(
+        {
+            'dashboard': 'My Dashboard'
+        },
+        'Poster Network'
+    ) }}
+
+    <h1>Poster Network</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h2>View Posters</h2>
+
+            <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                {% for groupId, group in groups %}
+                    <li class="nav-item">
+                        <button class="nav-link {% if groupId == '_mine' %}active{% endif %}"
+                                data-bs-toggle="tab" data-bs-target="#tab_{{ groupId|e('html_attr') }}"
+                                type="button" role="tab" aria-controls="tab_{{ groupId|e('html_attr') }}"
+                                aria-selected="true">{{ group.name }}</button>
+                    </li>
+                {% endfor %}
+
+                <div class="ms-auto">
+                    <a href="{{ urlFor('dashboard:posters:create') }}" class="btn btn btn-success">
+                        Upload a New Poster
+                    </a>
+                </div>
+            </ul>
+        </div>
+
+        <div class="card-body tab-content">
+            {% for groupId, group in groups %}
+                <div class="tab-pane fade {% if groupId == '_mine' %}active show{% endif %}"
+                     id="tab_{{ groupId|e('html_attr') }}"
+                     role="tabpanel">
+                    <div class="row"> <!-- Start of the grid container -->
+                        {% for poster in group.posters %}
+                            <div class="col-md-3 col-sm-6">
+                                <!-- Each poster takes up 1/4 of the width on medium screens and 1/2 on small screens. Adjust as needed. -->
+                                <div class="card mb-1">
+                                    <!-- Added margin-bottom for spacing between cards in the grid -->
+                                    <div class="card-body">
+                                        <a href="{{ urlFor('posters', {id: poster.id}) }}" target="_blank">
+                                            <img src="{{ posterThumbUrl(poster.thumb_path) }}" class="img-fluid"
+                                                 alt="Poster"/>
+                                        </a>
+
+                                        {% if groupId != '_mine' %}
+                                            <div>Creator: {{ poster.username }}</div>
+                                        {% endif %}
+
+                                        {% if poster.isExpired %}
+                                            <div class="text-danger">Expired</div>
+                                        {% endif %}
+
+                                        {% if posters.expiresAtText %}
+                                            <div class="text-warning">Expires {{ poster.expiresAtText }}</div>
+                                        {% endif %}
+
+                                        {% if poster.collection %}
+                                            <div>Collection: <code>{{ poster.collection }}</code></div>
+                                        {% endif %}
+
+                                        {% if poster.type_id %}
+                                            <div>Type: {{ types[poster.type_id] }}</div>
+                                        {% endif %}
+
+                                        {% if group.canEdit %}
+                                            <div>Views: {{ poster.views }}</div>
+
+                                            <div class="btn-group btn-group-sm mt-2">
+                                                <a href="{{ urlFor('dashboard:posters:edit', {id: poster.id}) }}"
+                                                   class="btn btn-warning btn-sm">
+                                                    <i class="bi-pencil-fill" aria-hidden="true"></i> Edit
+                                                </a>
+                                                <a href="{{ urlFor('dashboard:posters:delete', {id: poster.id}) }}"
+                                                   class="btn btn-danger btn-sm" data-confirm-danger="Remove poster?">
+                                                    <i class="bi-trash" aria-hidden="true"></i> Remove
+                                                </a>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div> <!-- End of the grid container -->
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

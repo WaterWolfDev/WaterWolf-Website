@@ -1,0 +1,56 @@
+{% extends "layouts/dashboard.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+
+{% block content %}
+    {{ breadcrumbs.body(
+        {
+            'dashboard': 'My Dashboard'
+        },
+        'Short URLs'
+    ) }}
+
+    <h1>Short URLs</h1>
+
+    <div class="card">
+        <h2 class="card-header">View Short URLs</h2>
+        <div class="card-body">
+            <div class="buttons mb-3">
+                <a class="btn btn-lg btn-success"
+                   href="{{ urlFor('dashboard:short_urls:create') }}">
+                    <i class="bi-plus-circle-fill" aria-hidden="true"></i> Add Short URL
+                </a>
+            </div>
+
+            <table class="table table-striped table-bordered table-hover align-middle">
+                <thead>
+                <tr>
+                    <th>Short URL</th>
+                    <th>Long URL</th>
+                    <th>Views</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in shortUrls %}
+                <tr>
+                    <th scope="col"><code>{{ row.short_url }}</code></th>
+                    <td>{{ row.long_url }}</td>
+                    <td>{{ row.views }}</td>
+                    <td>
+                        <a class="btn btn-sm btn-warning"
+                           href="{{ urlFor('dashboard:short_urls:edit', {id: row.id}) }}">
+                            Edit
+                        </a>
+                        <a class="btn btn-sm btn-danger"
+                           href="{{ urlFor('dashboard:short_urls:delete', {id: row.id}) }}">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

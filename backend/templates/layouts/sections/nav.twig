@@ -1,0 +1,108 @@
+<header>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/static/img/logo-with-logotype.svg" style="width: 211px; height: 45px;"
+                     alt="WaterWolf Family: We Build Adventure and Friendship">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="bi-info-circle"></i> About Us
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ urlFor('about') }}">
+                                    <i class="bi-info-lg"></i> About WaterWolf
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ urlFor('team') }}">
+                                    <i class="bi-people"></i> Our Team
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ urlFor('talent') }}">
+                                    <i class="bi-stars"></i> Our Talents
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                           aria-expanded="false">
+                            <i class="bi-wrench-adjustable-circle"></i> Services
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ urlFor('portals') }}">
+                                    <i class="bi-headset-vr"></i> Convention Portals
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ urlFor('posters:faq') }}">
+                                    <i class="bi-file-image-fill"></i> Poster Network
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ urlFor('worlds') }}">
+                            <i class="bi-globe-americas"></i> Worlds
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ urlFor('wwradio') }}" data-radio-popup="true">
+                            <i class="bi-broadcast"></i> Radio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ urlFor('live') }}">
+                            <i class="bi-play-btn"></i> Live
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ urlFor('donate') }}">
+                            <i class="bi-heart-fill"></i> Donate
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ urlFor('discord') }}" target="_blank">
+                            <i class="bi-discord" aria-hidden="true"></i> Discord
+                        </a>
+                    </li>
+                </ul>
+
+                {% if request is not empty %}
+                <div class="d-flex">
+                    {% if is_logged_in %}
+                        <a href="{{ urlFor('dashboard') }}" class="btn btn-success my-2 my-sm-0">
+                            <i class="bi-person-fill" aria-hidden="true"></i> My Dashboard
+                        </a>&nbsp;
+                        <a href="{{ urlFor('logout') }}" class="btn btn-danger my-2 my-sm-0"
+                           data-confirm-danger="Are you sure you want to log out?">
+                            <i class="bi-box-arrow-right" aria-hidden="true"></i> Log Out
+                        </a>
+                    {% else %}
+                        <a href="{{ urlFor('login') }}" class="btn btn-success my-2 my-sm-0">
+                            <i class="bi-key-fill" aria-hidden="true"></i> Login
+                        </a>&nbsp;
+                        <a href="{{ urlFor('register') }}" class="btn btn-primary my-2 my-sm-0">
+                            <i class="bi-person-check" aria-hidden="true"></i> Register
+                        </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+</header>

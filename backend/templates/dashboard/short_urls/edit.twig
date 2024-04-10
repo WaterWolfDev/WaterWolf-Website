@@ -1,0 +1,53 @@
+{% extends "layouts/dashboard.twig" %}
+
+{% import "macros/breadcrumbs.twig" as breadcrumbs %}
+
+{% block content %}
+    {{ breadcrumbs.body(
+        {
+            'dashboard': 'My Dashboard',
+            'dashboard:short_urls': 'Short URLs'
+        },
+        (isEditMode) ? 'Edit Short URL' : 'Create Short URL'
+    ) }}
+
+    <h1>Short URLs</h1>
+
+    <div class="card">
+        <h2 class="card-header">
+            {% if isEditMode %}
+                Edit Short URL
+            {% else %}
+                Create Short URL
+            {% endif %}
+        </h2>
+        <div class="card-body">
+            <form action="" method="POST">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="control-group">
+                            <label for="short_url" class="form-label">Shortened URL:</label>
+                            <input type="text" name="short_url" id="short_url"
+                                   value="{{ row.short_url|default('')|e('html_attr') }}"
+                                   class="form-control form-control-lg" required maxlength="128">
+                            <p class="form-text">The portion after the base URL (i.e. <code>foo</code> for
+                                <code>wtr.wf/foo</code>). Don't include a leading or trailing slash (/).</p>
+                        </div>
+                        <div class="control-group">
+                            <label for="long_url" class="form-label">Original URL:</label>
+                            <input type="text" name="long_url" id="long_url"
+                                   value="{{ row.long_url|default('')|e('html_attr') }}"
+                                   class="form-control form-control-lg" required maxlength="128">
+                            <p class="form-text">You can use a relative (i.e. <code>/dashboard</code>) or an absolute
+                                (i.e. <code>https://example.com</code>) URL.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button type="submit" class="btn btn-lg btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

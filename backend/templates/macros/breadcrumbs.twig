@@ -1,0 +1,13 @@
+{% macro body(urls, current) %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {% for url, urlName in urls %}
+            <li class="breadcrumb-item">
+                <a href="{{ urlFor(url) }}">{{ urlName }}</a>
+            </li>
+        {% endfor %}
+
+        <li class="breadcrumb-item active" aria-current="page">{{ current }}</li>
+    </ol>
+</nav>
+{% endmacro body %}

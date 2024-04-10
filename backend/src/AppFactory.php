@@ -41,7 +41,7 @@ final class AppFactory
             $containerBuilder->enableCompilation(Environment::getTempDirectory());
         }
 
-        $containerBuilder->addDefinitions(dirname(__DIR__) . '/bootstrap/services.php');
+        $containerBuilder->addDefinitions(dirname(__DIR__) . '/config/services.php');
 
         $di = $containerBuilder->build();
 
