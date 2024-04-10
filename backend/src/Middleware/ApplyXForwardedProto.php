@@ -19,16 +19,16 @@ class ApplyXForwardedProto implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler
     ): ResponseInterface {
-        if ($request->hasHeader('X-Forwarded-Proto')) {
-            $uri = $request->getUri();
-            $uri = $uri->withScheme($request->getHeaderLine('X-Forwarded-Proto'));
-            $request = $request->withUri($uri);
-        } elseif (Environment::isProduction()) {
+        if (Environment::isProduction()) {
             $uri = $request->getUri();
             if ($uri->getScheme() !== 'https') {
                 $uri = $uri->withScheme('https');
                 $request = $request->withUri($uri);
             }
+        } elseif ($request->hasHeader('X-Forwarded-Proto')) {
+            $uri = $request->getUri();
+            $uri = $uri->withScheme($request->getHeaderLine('X-Forwarded-Proto'));
+            $request = $request->withUri($uri);
         }
 
         return $handler->handle($request);
