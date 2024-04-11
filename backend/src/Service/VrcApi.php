@@ -2,67 +2,49 @@
 
 namespace App\Service;
 
-use App\Environment;
+use App\Service\VrcApi\AuthMiddleware;
+use App\Service\VrcApi\RateLimitStore;
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 
 final readonly class VrcApi
 {
+    public const string VRCAPI_BASE_URL = 'https://api.vrchat.cloud/api/1/';
+
+    private Client $httpClient;
+
     public function __construct(
-        private Client $http
+        LoggerInterface $logger,
+        AuthMiddleware $authMiddleware,
+        RateLimitStore $rateLimitStore
     ) {
+        $stack = HandlerStack::create();
+        $stack->push(
+            Middleware::log(
+                $logger,
+                new MessageFormatter('VRCAPI client {method} call to {uri} produced response {code}'),
+                LogLevel::DEBUG
+            )
+        );
+        $stack->push(RateLimiterMiddleware::perSecond(1, $rateLimitStore));
+        $stack->push($authMiddleware);
+
+        $this->httpClient = new Client([
+            'handler' => $stack,
+            'base_uri' => self::VRCAPI_BASE_URL,
+            'headers' => [
+                'User-Agent' => 'WaterWolf/1.0 Isaac@waterwolf.club',
+            ],
+        ]);
     }
 
-    /**
-     * Send a request to the API proxy server
-     *
-     * @param string $method The HTTP method to perform (POST, GET, PUT, etc)
-     * @param string $path The path to use (/api/1/visits etc)
-     * @param string|null $body The HTTP body (if any, set to null if not wanted)
-     * @param bool $priority If the request should use the high-priority queue
-     * @param bool $async If the request should be async (non-failable, ideal for friend requests/invite requests)
-     * @return string|array
-     */
-    public function sendRequest(
-        string $method,
-        string $path,
-        ?string $body = null,
-        bool $priority = false,
-        bool $async = false
-    ): string|array {
-        /** @noinspection HttpUrlsUsage */
-        $uri = 'http://149.106.100.136:8124/' . $path;
-
-        $requestConfig = [
-            'headers' => [
-                'Authorization' => $_ENV['VRCHAT_API_KEY'],
-            ],
-        ];
-
-        if ($priority) {
-            $requestConfig['headers']['X-Priority'] = 'high';
-        }
-        if ($async) {
-            $requestConfig['headers']['X-Background'] = '1';
-        }
-
-        if ($body !== null) {
-            $requestConfig['json'] = $body;
-        }
-
-        $response = $this->http->request(
-            $method,
-            $uri,
-            $requestConfig
-        );
-
-        if ($response->getHeaderLine('Content-Type') === 'application/json') {
-            return json_decode(
-                $response->getBody()->getContents(),
-                true,
-                JSON_THROW_ON_ERROR
-            );
-        } else {
-            return $response->getBody()->getContents();
-        }
+    public function getHttpClient(): Client
+    {
+        return $this->httpClient;
     }
 }

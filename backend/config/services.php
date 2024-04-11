@@ -13,6 +13,7 @@ use Monolog\Logger;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel as PsrLogLevel;
 use Psr\SimpleCache\CacheInterface;
 use Slim\Factory\ServerRequestCreatorFactory;
 use Slim\Handlers\Strategies\RequestResponse;
@@ -132,11 +133,26 @@ return [
     },
 
     // HTTP client
-    HttpClient::class => static fn() => new HttpClient([
-        'headers' => [
-            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-        ],
-    ]),
+    HttpClient::class => static function (
+        Logger $logger
+    ) {
+        $stack = GuzzleHttp\HandlerStack::create();
+
+        $stack->push(
+            GuzzleHttp\Middleware::log(
+                $logger,
+                new GuzzleHttp\MessageFormatter('HTTP client {method} call to {uri} produced response {code}'),
+                PsrLogLevel::DEBUG
+            )
+        );
+
+        return new HttpClient([
+            'handler' => $stack,
+            'headers' => [
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+            ],
+        ]);
+    },
 
     // Filesystem Utilities
     Filesystem::class => static fn() => new Filesystem(),

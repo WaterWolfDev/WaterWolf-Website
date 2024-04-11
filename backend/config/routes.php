@@ -179,9 +179,6 @@ return function (Slim\App $app) {
         $group->get('/json', App\Controller\Api\JsonAction::class)
             ->setName('api:json');
 
-        $group->post('/vrc_api', App\Controller\Api\VrcApiAction::class)
-            ->setName('api:vrc_api');
-
         $group->group('/comments', function (RouteCollectorProxy $group) {
             $group->get('/{location}', App\Controller\Api\CommentsController::class . ':listAction')
                 ->setName('api:comments');
