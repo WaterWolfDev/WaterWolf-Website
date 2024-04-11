@@ -37,7 +37,7 @@
                     <th scope="col"><code>{{ row.short_url }}</code></th>
                     <td>{{ row.long_url }}</td>
                     <td>{{ row.views }}</td>
-                    <td>
+                    <td class="text-nowrap">
                         <a class="btn btn-sm btn-warning"
                            href="{{ urlFor('dashboard:short_urls:edit', {id: row.id}) }}">
                             Edit

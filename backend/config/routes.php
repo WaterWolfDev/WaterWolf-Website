@@ -205,4 +205,10 @@ return function (Slim\App $app) {
 
     $app->get('/short_url[/{url}]', App\Controller\GetShortUrlAction::class)
         ->setName('short_url');
+
+    /*
+     * Catch-all handler for base URLs to check the Short URL database.
+     */
+
+    $app->get('/{url}', App\Controller\GetShortUrlAction::class);
 };
