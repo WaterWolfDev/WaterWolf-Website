@@ -1,8 +1,6 @@
 {
   "short_name": "waterwolf.club",
   "name": "EN",
-  "start_url": "/",
-  "gcm_sender_id": "1073325491958",
   "icons": [
     {
       "src": "/static/img/favicon/android-icon-36x36.png",
