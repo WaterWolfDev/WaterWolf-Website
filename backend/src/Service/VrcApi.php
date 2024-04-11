@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
@@ -46,5 +47,20 @@ final readonly class VrcApi
     public function getHttpClient(): Client
     {
         return $this->httpClient;
+    }
+
+    public static function processResponse(ResponseInterface $response): mixed
+    {
+        $body = $response->getBody()->getContents();
+
+        if (json_validate($body)) {
+            return json_decode(
+                $body,
+                true,
+                JSON_THROW_ON_ERROR
+            );
+        }
+
+        return $body;
     }
 }
