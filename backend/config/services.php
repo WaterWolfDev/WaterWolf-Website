@@ -92,7 +92,8 @@ return [
                 'init' => App\Console\Command\InitCommand::class,
                 'migrate' => App\Console\Command\MigrateCommand::class,
                 'seed' => App\Console\Command\SeedCommand::class,
-                'sync' => App\Console\Command\SyncCommand::class,
+                'sync:clear-login-tokens' => App\Console\Command\Sync\ClearLoginTokens::class,
+                'sync:update-vrchat-names' => App\Console\Command\Sync\UpdateVRChatDisplayNames::class,
                 'uptime-wait' => App\Console\Command\UptimeWaitCommand::class,
             ]
         );

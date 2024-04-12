@@ -86,11 +86,15 @@
                 </div>
 
                 <div class="form-group mb-2">
-                    <label for="vrchat_username" class="form-label">VRChat Username:</label>
+                    <label for="vrchat_uid" class="form-label">VRChat Profile URL:</label>
                     <input type="text" class="form-control form-control-secondary"
-                           id="vrchat_username" name="vrchat_username"
-                           maxlength="24"
-                           placeholder="ChuckNorris" required>
+                           id="vrchat_uid" name="vrchat_uid"
+                           maxlength="200"
+                           placeholder="https://vrchat.com/home/user/usr_abcdefg1-1234-5678-9012-abcdefghijk1" required>
+                    <div class="form-text">
+                        Log in to <a href="https://vrchat.com/home/login" target="_blank">VRChat</a>, click your display
+                        name in the sidebar, and paste the URL of your profile page.
+                    </div>
                 </div>
 
                 <div class="form-group mb-2">
@@ -98,7 +102,7 @@
                     <input type="text" class="form-control form-control-secondary"
                            id="discord_username" name="discord_username"
                            maxlength="24"
-                           placeholder="ChuckNorris#0001" required>
+                           placeholder="ChuckNorris" required>
                 </div>
 
                 <div class="form-group mb-2">

@@ -8,8 +8,6 @@ use App\Media;
 use App\Service\VrcApi;
 use Doctrine\DBAL\Connection;
 use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Query;
-use GuzzleHttp\Psr7\Uri;
 use Intervention\Image\ImageManager;
 use Psr\Http\Message\ResponseInterface;
 
@@ -43,7 +41,7 @@ final readonly class AddWorldAction
                     throw new \InvalidArgumentException('World ID not specified.');
                 }
 
-                $worldId = $this->parseWorldId($worldId);
+                $worldId = VrcApi::parseWorldId($worldId);
 
                 // Fetch world info from the VRC API.
                 $worldInfo = VrcApi::processResponse(
@@ -93,38 +91,5 @@ final readonly class AddWorldAction
                 'error' => $error,
             ]
         );
-    }
-
-    private function parseWorldId(string $worldId): string
-    {
-        $worldId = trim($worldId);
-
-        if (str_starts_with($worldId, 'wrld')) {
-            return $worldId;
-        }
-
-        if (str_starts_with($worldId, 'http')) {
-            $uri = new Uri($worldId);
-
-            // URLs in the form of:
-            // https://vrchat.com/home/world/wrld_bcfd94c8-3d69-4d9b-b610-282c6d8a5b3d
-            if (str_starts_with($uri->getPath(), '/home/world')) {
-                $uriParts = explode('/', trim($uri->getPath(), '/'));
-
-                if (str_starts_with($uriParts[2], 'wrld')) {
-                    return $uriParts[2];
-                }
-            }
-
-            // URLs in the form of:
-            // https://vrchat.com/home/launch?worldId=wrld_4cf554b4-430c-4f8f-b53e-1f294eed230b&...
-            $queryParams = Query::parse($uri->getQuery());
-
-            if (isset($queryParams['worldId']) && str_starts_with($queryParams['worldId'], 'wrld')) {
-                return $queryParams['worldId'];
-            }
-        }
-
-        throw new \InvalidArgumentException('Could not determine world ID from URL.');
     }
 }
