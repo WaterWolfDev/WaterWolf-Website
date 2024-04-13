@@ -19,6 +19,9 @@ final readonly class VrcApi
 {
     public const string VRCAPI_BASE_URL = 'https://api.vrchat.cloud/api/1/';
 
+    public const string USER_ID_REGEX = '/^usr_([a-f0-9]{8})-([a-f0-9]{4})-([a-f0-9]{4})-([a-f0-9]{4})-([a-f0-9]{12})$/';
+    public const string WORLD_ID_REGEX = '/^wrld_([a-f0-9]{8})-([a-f0-9]{4})-([a-f0-9]{4})-([a-f0-9]{4})-([a-f0-9]{12})$/';
+
     private Client $httpClient;
 
     public function __construct(
@@ -83,9 +86,8 @@ final readonly class VrcApi
 
     public static function parseWorldId(string $worldId): string
     {
-        $worldId = trim($worldId);
-
-        if (str_starts_with($worldId, 'wrld')) {
+        $worldId = strtolower(trim($worldId));
+        if (preg_match(self::WORLD_ID_REGEX, $worldId)) {
             return $worldId;
         }
 
@@ -97,8 +99,9 @@ final readonly class VrcApi
             if (str_starts_with($uri->getPath(), '/home/world')) {
                 $uriParts = explode('/', trim($uri->getPath(), '/'));
 
-                if (str_starts_with($uriParts[2], 'wrld')) {
-                    return $uriParts[2];
+                $worldId = strtolower(trim($uriParts[2] ?? ''));
+                if (preg_match(self::WORLD_ID_REGEX, $worldId)) {
+                    return $worldId;
                 }
             }
 
@@ -106,8 +109,9 @@ final readonly class VrcApi
             // https://vrchat.com/home/launch?worldId=wrld_4cf554b4-430c-4f8f-b53e-1f294eed230b&...
             $queryParams = Query::parse($uri->getQuery());
 
-            if (isset($queryParams['worldId']) && str_starts_with($queryParams['worldId'], 'wrld')) {
-                return $queryParams['worldId'];
+            $worldId = strtolower(trim($queryParams['worldid'] ?? ''));
+            if (preg_match(self::WORLD_ID_REGEX, $worldId)) {
+                return $worldId;
             }
         }
 
@@ -116,10 +120,8 @@ final readonly class VrcApi
 
     public static function parseUserId(string $userId): string
     {
-        $userId = trim($userId);
-        ;
-
-        if (str_starts_with($userId, 'usr')) {
+        $userId = strtolower(trim($userId));
+        if (preg_match(self::USER_ID_REGEX, $userId)) {
             return $userId;
         }
 
@@ -131,8 +133,9 @@ final readonly class VrcApi
             if (str_starts_with($uri->getPath(), '/home/user')) {
                 $uriParts = explode('/', trim($uri->getPath(), '/'));
 
-                if (str_starts_with($uriParts[2], 'usr')) {
-                    return $uriParts[2];
+                $userId = strtolower(trim($uriParts[2] ?? ''));
+                if (preg_match(self::USER_ID_REGEX, $userId)) {
+                    return $userId;
                 }
             }
         }
