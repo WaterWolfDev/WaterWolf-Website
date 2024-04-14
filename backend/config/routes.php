@@ -182,6 +182,11 @@ return function (Slim\App $app) {
         $group->get('/vrc_acl/{type}', App\Controller\Api\VrcAclAction::class)
             ->setName('api:vrc_acl');
 
+        $group->group('/posters', function (RouteCollectorProxy $group) {
+            $group->get('/spec', App\Controller\Api\PosterSpecAction::class)
+                ->setName('api:posters:spec');
+        });
+
         $group->group('/comments', function (RouteCollectorProxy $group) {
             $group->get('/{location}', App\Controller\Api\CommentsController::class . ':listAction')
                 ->setName('api:comments');
