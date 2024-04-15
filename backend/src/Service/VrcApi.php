@@ -86,7 +86,7 @@ final readonly class VrcApi
 
     public static function parseWorldId(string $worldId): string
     {
-        $worldId = strtolower(trim($worldId));
+        $worldId = trim($worldId);
         if (preg_match(self::WORLD_ID_REGEX, $worldId)) {
             return $worldId;
         }
@@ -98,29 +98,24 @@ final readonly class VrcApi
             // https://vrchat.com/home/world/wrld_bcfd94c8-3d69-4d9b-b610-282c6d8a5b3d
             if (str_starts_with($uri->getPath(), '/home/world')) {
                 $uriParts = explode('/', trim($uri->getPath(), '/'));
-
-                $worldId = strtolower(trim($uriParts[2] ?? ''));
-                if (preg_match(self::WORLD_ID_REGEX, $worldId)) {
-                    return $worldId;
-                }
+                return trim($uriParts[2] ?? '');
             }
 
             // URLs in the form of:
             // https://vrchat.com/home/launch?worldId=wrld_4cf554b4-430c-4f8f-b53e-1f294eed230b&...
             $queryParams = Query::parse($uri->getQuery());
-
-            $worldId = strtolower(trim($queryParams['worldid'] ?? ''));
-            if (preg_match(self::WORLD_ID_REGEX, $worldId)) {
-                return $worldId;
+            if (!empty($queryParams['worldid'])) {
+                return trim($queryParams['worldid']);
             }
         }
 
-        throw new \InvalidArgumentException('Could not determine world ID from URL.');
+        // Allow for non-standard world IDs from before VRC standardized on them.
+        return $worldId;
     }
 
     public static function parseUserId(string $userId): string
     {
-        $userId = strtolower(trim($userId));
+        $userId = trim($userId);
         if (preg_match(self::USER_ID_REGEX, $userId)) {
             return $userId;
         }
@@ -132,14 +127,11 @@ final readonly class VrcApi
             // https://vrchat.com/home/user/usr_fd418fc1-6824-43ff-b31a-18b6a5d16b15
             if (str_starts_with($uri->getPath(), '/home/user')) {
                 $uriParts = explode('/', trim($uri->getPath(), '/'));
-
-                $userId = strtolower(trim($uriParts[2] ?? ''));
-                if (preg_match(self::USER_ID_REGEX, $userId)) {
-                    return $userId;
-                }
+                return trim($uriParts[2] ?? '');
             }
         }
 
-        throw new \InvalidArgumentException('Could not determine user ID from URL.');
+        // Allow non-standard UIDs from before VRC standardized on UIDs.
+        return $userId;
     }
 }
