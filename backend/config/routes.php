@@ -1,9 +1,6 @@
 <?php
 
-use App\Http\Response;
-use App\Http\ServerRequest;
 use App\View;
-use Psr\Http\Message\ResponseInterface;
 use Slim\Routing\RouteCollectorProxy;
 
 return function (Slim\App $app) {
@@ -182,8 +179,13 @@ return function (Slim\App $app) {
         $group->get('/json', App\Controller\Api\JsonAction::class)
             ->setName('api:json');
 
-        $group->post('/vrc_api', App\Controller\Api\VrcApiAction::class)
-            ->setName('api:vrc_api');
+        $group->get('/vrc_acl/{type}', App\Controller\Api\VrcAclAction::class)
+            ->setName('api:vrc_acl');
+
+        $group->group('/posters', function (RouteCollectorProxy $group) {
+            $group->get('/spec', App\Controller\Api\PosterSpecAction::class)
+                ->setName('api:posters:spec');
+        });
 
         $group->group('/comments', function (RouteCollectorProxy $group) {
             $group->get('/{location}', App\Controller\Api\CommentsController::class . ':listAction')
@@ -210,23 +212,8 @@ return function (Slim\App $app) {
         ->setName('short_url');
 
     /*
-     * URL Redirects
+     * Catch-all handler for base URLs to check the Short URL database.
      */
-    $redirects = [
-        'discord' => 'https://discord.gg/waterwolf',
-        'github' => 'https://github.com/WaterWolfDev',
-        'twitch' => 'https://www.twitch.tv/waterwolfvr',
-        'twitter' => 'https://twitter.com/waterwolftown',
-        'x' => 'https://twitter.com/waterwolftown',
-        'vrchat' => 'https://vrc.group/WWOLF.1912',
-    ];
 
-    foreach ($redirects as $url => $dest) {
-        $app->get(
-            '/' . $url,
-            function (ServerRequest $request, Response $response) use ($dest): ResponseInterface {
-                return $response->withRedirect($dest);
-            }
-        )->setName($url);
-    }
+    $app->get('/{url}', App\Controller\GetShortUrlAction::class);
 };

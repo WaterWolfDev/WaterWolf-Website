@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Console\Command;
+namespace App\Console\Command\Sync;
 
+use App\Console\Command\AbstractCommand;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-#[AsCommand('sync', 'Run the routine synchronization (cron) tasks.')]
-final class SyncCommand extends AbstractCommand
+#[AsCommand('sync:clear-login-tokens', 'Sync task: Clear login tokens.')]
+final class ClearLoginTokens extends AbstractCommand
 {
     public function __construct(
         private readonly Connection $db
@@ -21,16 +22,8 @@ final class SyncCommand extends AbstractCommand
     {
         $io = new SymfonyStyle($input, $output);
 
-        $io->info('Starting sync tasks...');
+        $io->info('Clearing login tokens...');
 
-        $this->clearUserLoginTokens($io);
-
-        $io->success('Sync tasks completed.');
-        return 0;
-    }
-
-    private function clearUserLoginTokens(SymfonyStyle $io): void
-    {
         $thresholdDate = new \DateTimeImmutable('-2 days', new \DateTimeZone('UTC'));
         $this->db->executeQuery(
             <<<'SQL'
@@ -41,5 +34,8 @@ final class SyncCommand extends AbstractCommand
                 'threshold' => $thresholdDate->format('Y-m-d H:i:s'),
             ]
         );
+
+        $io->success('Task completed.');
+        return 0;
     }
 }

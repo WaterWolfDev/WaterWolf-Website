@@ -295,21 +295,43 @@
                 <!-- VRC Code -->
                 <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="row">
-                        <div class="col-lg-4">
+                        <div class="col-lg-6">
                             <div class="card bg-dark">
                                 <h4 class="card-header">VRChat Settings</h4>
                                 <div class="card-body">
                                     <div class="form-group">
-                                        <label class="form-label" for="vrchat">VRChat Username:</label>
-                                        <input class="form-control" id="vrchat" name="vrchat" type="text"
-                                               maxlength="24"
-                                               value="{{ profile.vrchat|e('html_attr') }}">
+                                        <label class="form-label" for="vrchat_uid">VRChat Profile URL / User ID:</label>
+                                        <input class="form-control" id="vrchat_uid" name="vrchat_uid" type="text"
+                                               maxlength="200"
+                                               placeholder="https://vrchat.com/home/user/usr_abcdefg1-1234-5678-9012-abcdefghijk1"
+                                               value="{{ profile.vrchat_uid|e('html_attr') }}">
+                                        <div class="form-text">
+                                            Log in to <a href="https://vrchat.com/home/login" target="_blank">VRChat</a>,
+                                            click your display
+                                            name in the sidebar, and paste the URL of your profile page.
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-8">
-
+                        <div class="col-lg-6">
+                            <div class="card bg-dark">
+                                <h4 class="card-header">My VRChat Profile</h4>
+                                <div class="card-body">
+                                    {% if profile.vrchat is not empty %}
+                                        <h5>
+                                            <a href="https://vrchat.com/home/user/{{ profile.vrchat_uid|e('html_attr') }}"
+                                               target="_blank">{{ profile.vrchat }}</a>
+                                        </h5>
+                                        <p class="card-text">
+                                            Last synced {{ timeAgo(profile.vrchat_synced_at) }}
+                                        </p>
+                                    {% else %}
+                                        <p class="card-text">You have not set up a VRChat profile. Provide your profile
+                                            URL to automatically sync your VRChat profile.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

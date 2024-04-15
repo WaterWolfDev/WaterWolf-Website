@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Exception\NotFoundException;
 use App\Http\Response;
 use App\Http\ServerRequest;
 use Doctrine\DBAL\Connection;
@@ -40,9 +41,7 @@ final readonly class GetShortUrlAction
         );
 
         if (false === $shortUrl) {
-            return $response->withRedirect(
-                $request->getUri()->withQuery('')->withPath('/' . $url)
-            );
+            throw new NotFoundException($request, 'Page not found!');
         }
 
         $this->db->executeQuery(

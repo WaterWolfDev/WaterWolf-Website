@@ -2,10 +2,10 @@
 
 namespace App\Controller\Account;
 
-use App\Environment;
 use App\Http\Response;
 use App\Http\ServerRequest;
 use App\Service\Discord;
+use App\Service\VrcApi;
 use Doctrine\DBAL\Connection;
 use Psr\Http\Message\ResponseInterface;
 
@@ -13,7 +13,8 @@ final readonly class RegisterAction
 {
     public function __construct(
         private Connection $db,
-        private Discord $discord
+        private Discord $discord,
+        private VrcApi $vrcApi
     ) {
     }
 
@@ -30,10 +31,17 @@ final readonly class RegisterAction
 
         if ($request->isPost()) {
             try {
-                $regUsername = str_replace(['#', '&', '�'], '', $postData['reg_username'] ?? '');
-                $regEmail = filter_var($postData['reg_email'] ?? '', FILTER_SANITIZE_EMAIL);
+                $row = [
+                    'username' => str_replace(['#', '&', '�'], '', $postData['reg_username'] ?? ''),
+                    'email' => filter_var($postData['reg_email'] ?? '', FILTER_SANITIZE_EMAIL),
+                    'country' => $postData['reg_country'] ?? null,
+                    'reg_date' => time(),
+                    'lastip' => $request->getIp(),
+                    'discord' => $postData['discord_username'] ?? null,
+                    'ref' => $postData['ref'] ?? null,
+                ];
 
-                if (empty($regUsername) || empty($regEmail)) {
+                if (empty($row['username']) || empty($row['email'])) {
                     throw new \Exception('Nickname and e-mail cannot be left blank.');
                 }
 
@@ -44,6 +52,8 @@ final readonly class RegisterAction
                     throw new \Exception('The password and confirm password boxes do not match. Please try again.');
                 }
 
+                $row['password'] = password_hash($regPass, PASSWORD_ARGON2ID);
+
                 $checkUserOrEmail = $this->db->fetchOne(
                     <<<'SQL'
                         SELECT username
@@ -51,8 +61,8 @@ final readonly class RegisterAction
                         WHERE LOWER(username) = LOWER(:username) OR LOWER(email) = LOWER(:email)
                     SQL,
                     [
-                        'username' => $regUsername,
-                        'email' => $regEmail,
+                        'username' => $row['username'],
+                        'email' => $row['email'],
                     ]
                 );
 
@@ -60,20 +70,11 @@ final readonly class RegisterAction
                     throw new \Exception('Username or e-mail address already registered.');
                 }
 
-                $this->db->insert(
-                    'web_users',
-                    [
-                        'username' => $regUsername,
-                        'email' => $regEmail,
-                        'country' => $postData['reg_country'] ?? null,
-                        'reg_date' => time(),
-                        'lastip' => $request->getIp(),
-                        'password' => password_hash($regPass, PASSWORD_ARGON2ID),
-                        'vrchat' => $postData['vrchat_username'] ?? null,
-                        'discord' => $postData['discord_username'] ?? null,
-                        'ref' => $postData['ref'] ?? null,
-                    ]
-                );
+                $row['vrchat_uid'] = VrcApi::parseUserId($postData['vrchat_uid'] ?? '');
+                $row['vrchat'] = $this->vrcApi->getDisplayNameFromUid($row['vrchat_uid']);
+                $row['vrchat_synced_at'] = time();
+
+                $this->db->insert('web_users', $row);
 
                 $newUserId = $this->db->lastInsertId();
 
@@ -87,7 +88,7 @@ final readonly class RegisterAction
                     '',
                     hexdec('00FF00'),
                     'New User Created on WaterWolf Website',
-                    'User ' . $regUsername . ' Has created a new account.',
+                    sprintf('User %s has created a new account.', $row['username']),
                     (string)$request->getUri()->withPath('/static/img/waterwolf_community.png')
                 );
 

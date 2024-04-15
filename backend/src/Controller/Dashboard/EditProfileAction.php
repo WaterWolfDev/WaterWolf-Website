@@ -5,13 +5,15 @@ namespace App\Controller\Dashboard;
 use App\Exception\NotFoundException;
 use App\Http\Response;
 use App\Http\ServerRequest;
+use App\Service\VrcApi;
 use Doctrine\DBAL\Connection;
 use Psr\Http\Message\ResponseInterface;
 
 final readonly class EditProfileAction
 {
     public function __construct(
-        private Connection $db
+        private Connection $db,
+        private VrcApi $vrcApi
     ) {
     }
 
@@ -80,7 +82,7 @@ final readonly class EditProfileAction
                     'email' => $postData['email'],
                     'discord' => $postData['discord'] ?? null,
                     'twitch' => $postData['twitch'] ?? null,
-                    'vrchat' => $postData['vrchat'] ?? null,
+                    'vrchat_uid' => $postData['vrchat_uid'] ?? null,
                     'vrcdn' => $postData['vrcdn'] ?? null,
                     'website' => $postData['website'] ?? null,
                     'aboutme' => $postData['aboutme'] ?? null,
@@ -135,6 +137,13 @@ final readonly class EditProfileAction
                     if ($checkUsername !== false) {
                         throw new \InvalidArgumentException('Username is already in use by another user.');
                     }
+                }
+
+                // Handle VRC UID change.
+                if ($updateFields['vrchat_uid'] !== $profile['vrchat_uid']) {
+                    $updateFields['vrchat_uid'] = VrcApi::parseUserId($updateFields['vrchat_uid']);
+                    $updateFields['vrchat'] = $this->vrcApi->getDisplayNameFromUid($updateFields['vrchat_uid']);
+                    $updateFields['vrchat_synced_at'] = time();
                 }
 
                 if ($profile['is_team'] === 1) {
