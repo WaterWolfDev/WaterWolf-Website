@@ -100,7 +100,7 @@ final class UpdateVRChatDisplayNames extends AbstractCommand
             $uid = trim($row['vrchat_uid']);
             if (!empty($uid)) {
                 try {
-                    $row['vrchat'] = $this->vrcApi->getDisplayNameFromUid($uid);
+                    $updated['vrchat'] = $this->vrcApi->getDisplayNameFromUid($uid);
                 } catch (\Throwable) {
                 }
             }
