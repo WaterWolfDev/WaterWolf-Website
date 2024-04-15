@@ -141,9 +141,15 @@ final readonly class EditProfileAction
 
                 // Handle VRC UID change.
                 if ($updateFields['vrchat_uid'] !== $profile['vrchat_uid']) {
-                    $updateFields['vrchat_uid'] = VrcApi::parseUserId($updateFields['vrchat_uid']);
-                    $updateFields['vrchat'] = $this->vrcApi->getDisplayNameFromUid($updateFields['vrchat_uid']);
                     $updateFields['vrchat_synced_at'] = time();
+
+                    if (!empty($updateFields['vrchat_uid'])) {
+                        $updateFields['vrchat_uid'] = VrcApi::parseUserId($updateFields['vrchat_uid']);
+                        $updateFields['vrchat'] = $this->vrcApi->getDisplayNameFromUid($updateFields['vrchat_uid']);
+                    } else {
+                        $updateFields['vrchat_uid'] = null;
+                        $updateFields['vrchat'] = null;
+                    }
                 }
 
                 if ($profile['is_team'] === 1) {
