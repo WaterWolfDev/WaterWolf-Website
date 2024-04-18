@@ -72,7 +72,7 @@
                                         {% endif %}
 
                                         {% if group.canEdit %}
-                                            <div>Views: {{ poster.views }}</div>
+                                            <div title="Each time a poster is served, a hit is recorded.">Hits: {{ poster.views }}</div>
 
                                             <div class="btn-group btn-group-sm mt-2">
                                                 <a href="{{ urlFor('dashboard:posters:edit', {id: poster.id}) }}"
