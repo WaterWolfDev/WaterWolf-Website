@@ -155,6 +155,9 @@ return function (Slim\App $app) {
         $group->get('/team', App\Controller\TeamAction::class)
             ->setName('team');
 
+        $group->get('/vector', View::staticPage('vector'))
+            ->setName('vector');
+
         $group->group('/wwradio', function (RouteCollectorProxy $group) {
             $group->get('', View::staticPage('wwradio/index'))
                 ->setName('wwradio');
