@@ -4,8 +4,7 @@ import vue from '@vitejs/plugin-vue';
 
 const inputs = {
     "layout": resolve(__dirname, "./frontend/layout.js"),
-    "wwradio": resolve(__dirname, "./frontend/wwradio.js"),
-    "vue_comments": resolve(__dirname, "./frontend/vue/comments.js")
+    "wwradio": resolve(__dirname, "./frontend/wwradio.js")
 };
 
 console.log(inputs);
