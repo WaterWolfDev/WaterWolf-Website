@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Traits\HasComments;
 use App\Exception\NotFoundException;
 use App\Http\Response;
 use App\Http\ServerRequest;
@@ -10,6 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 
 final readonly class WorldsController
 {
+    use HasComments;
+
     public function __construct(
         private Connection $db
     ) {
@@ -43,6 +46,11 @@ final readonly class WorldsController
         array $params
     ): ResponseInterface {
         $id = $params['id'] ?? $request->getParam('v', $request->getParam('id'));
+        $commentId = sprintf('world_comment_%s', $id);
+
+        if ($request->isPost()) {
+            return $this->handlePost($request, $response, $commentId);
+        }
 
         $world = $this->db->fetchAssociative(
             <<<'SQL'
@@ -87,6 +95,7 @@ final readonly class WorldsController
             [
                 'world' => $world,
                 'sidebar_worlds' => $sidebar_worlds,
+                'comments' => $this->getComments($commentId),
             ]
         );
     }

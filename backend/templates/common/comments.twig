@@ -1,0 +1,57 @@
+<!-- Comments Form -->
+<div class="ts-comments-box card mb-3">
+    <h4 class="card-header">Comments</h4>
+    <div class="card-body">
+        {% if comments %}
+            <div class="list-group mb-3" id="comments-list">
+                {% for row in comments %}
+                    <div class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">
+                                {{ row.username }}
+                            </h5>
+                            <small class="text-muted">
+                                {{ timeAgo(row.tstamp) }}
+                            </small>
+                        </div>
+                        <p class="mb-1">
+                            {{ row.comment }}
+                        </p>
+                        {% if user.isMod() %}
+                            <form action="" method="post">
+                                <input type="hidden" name="do" value="delete">
+                                <input type="hidden" name="id" value="{{ row.id|e('html_attr') }}">
+
+                                <button type="submit" class="btn btn-sm btn-danger"
+                                        data-confirm-danger="Remove comment?">
+                                    <i class="bi-trash"></i> Remove
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if is_logged_in %}
+            <h4>Make a Comment</h4>
+
+            <form method="post" action="">
+                <div class="form-group">
+                    <label class="form-label" for="form-comment">Message:</label>
+                    <textarea class="form-control" name="comment" id="form-comment" rows="3" required></textarea>
+                </div>
+
+                <div class="buttons mt-2">
+                    <button type="submit" class="btn btn-primary">Comment!</button>
+                </div>
+            </form>
+        {% else %}
+            <h4>Join WaterWolf to Comment</h4>
+            <p class="card-text">
+                Want to comment? <a href="{{ urlFor('register') }}">Make an account</a> or <a
+                        href="{{ urlFor('login') }}">login</a>.
+            </p>
+        {% endif %}
+    </div>
+</div>

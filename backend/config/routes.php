@@ -12,6 +12,9 @@ return function (Slim\App $app) {
             '/defective',
             App\Controller\Events\DefectiveAction::class
         )->setName('defective');
+
+        $group->get('/vector', View::staticPage('events/vector'))
+            ->setName('vector');
     })->add(App\Middleware\EnableView::class)
         ->add(App\Middleware\GetCurrentUser::class)
         ->add(App\Middleware\EnableSession::class);
@@ -140,7 +143,7 @@ return function (Slim\App $app) {
         $group->get('/posters/faq', App\Controller\Posters\GetFaqAction::class)
             ->setName('posters:faq');
 
-        $group->get('/profile[/{user}]', App\Controller\ProfileAction::class)
+        $group->map(['GET', 'POST'], '/profile[/{user}]', App\Controller\ProfileAction::class)
             ->setName('profile');
 
         $group->map(['GET', 'POST'], '/recover', App\Controller\Account\RecoverAction::class)
@@ -155,9 +158,6 @@ return function (Slim\App $app) {
         $group->get('/team', App\Controller\TeamAction::class)
             ->setName('team');
 
-        $group->get('/vector', View::staticPage('vector'))
-            ->setName('vector');
-
         $group->group('/wwradio', function (RouteCollectorProxy $group) {
             $group->get('', View::staticPage('wwradio/index'))
                 ->setName('wwradio');
@@ -169,7 +169,7 @@ return function (Slim\App $app) {
         $group->get('/worlds', App\Controller\WorldsController::class . ':listAction')
             ->setName('worlds');
 
-        $group->get('/world[/{id}]', App\Controller\WorldsController::class . ':getAction')
+        $group->map(['GET', 'POST'], '/world[/{id}]', App\Controller\WorldsController::class . ':getAction')
             ->setName('world');
     })->add(App\Middleware\EnableView::class)
         ->add(App\Middleware\GetCurrentUser::class)
@@ -188,23 +188,6 @@ return function (Slim\App $app) {
         $group->group('/posters', function (RouteCollectorProxy $group) {
             $group->get('/spec', App\Controller\Api\PosterSpecAction::class)
                 ->setName('api:posters:spec');
-        });
-
-        $group->group('/comments', function (RouteCollectorProxy $group) {
-            $group->get('/{location}', App\Controller\Api\CommentsController::class . ':listAction')
-                ->setName('api:comments');
-
-            $group->post('/{location}', App\Controller\Api\CommentsController::class . ':postAction')
-                ->setName('api:comments:post')
-                ->add(new App\Middleware\Auth\RequireLoggedIn())
-                ->add(App\Middleware\GetCurrentUser::class)
-                ->add(App\Middleware\EnableSession::class);
-
-            $group->delete('/{location}', App\Controller\Api\CommentsController::class . ':deleteAction')
-                ->setName('api:comments:delete')
-                ->add(new App\Middleware\Auth\RequireMod())
-                ->add(App\Middleware\GetCurrentUser::class)
-                ->add(App\Middleware\EnableSession::class);
         });
     });
 
