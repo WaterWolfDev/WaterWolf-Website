@@ -1,13 +1,6 @@
 {% extends "layouts/site.twig" %}
 
 {% import "macros/breadcrumbs.twig" as breadcrumbs %}
-{% import "macros/global_comments.twig" as globalComments %}
-
-{% block head %}
-    {{ parent() }}
-
-    {{ globalComments.head("world_comment_#{world.id}") }}
-{% endblock %}
 
 {% block content %}
 <div class="container page">
@@ -33,7 +26,7 @@
                 </div>
             </div>
 
-            {{ globalComments.body() }}
+            {{ include('common/comments.twig') }}
         </div>
 
         <div class="col-md-3">

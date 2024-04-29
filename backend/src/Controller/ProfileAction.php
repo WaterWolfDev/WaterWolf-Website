@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Controller\Traits\HasComments;
 use App\Exception\NotFoundException;
 use App\Http\Response;
 use App\Http\ServerRequest;
@@ -10,6 +11,8 @@ use Psr\Http\Message\ResponseInterface;
 
 final readonly class ProfileAction
 {
+    use HasComments;
+
     public function __construct(
         private Connection $db
     ) {
@@ -21,6 +24,12 @@ final readonly class ProfileAction
         array $params
     ): ResponseInterface {
         $username = $params['user'] ?? $request->getParam('user', $request->getParam('id'));
+
+        $commentId = sprintf('profile_comment_%s', $username);
+
+        if ($request->isPost()) {
+            return $this->handlePost($request, $response, $commentId);
+        }
 
         $profile = $this->db->fetchAssociative(
             <<<'SQL'
@@ -44,6 +53,7 @@ final readonly class ProfileAction
             'profile',
             [
                 'profile' => $profile,
+                'comments' => $this->getComments($commentId),
             ]
         );
     }

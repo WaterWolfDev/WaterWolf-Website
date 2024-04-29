@@ -1,13 +1,5 @@
 {% extends "layouts/site.twig" %}
 
-{% import "macros/global_comments.twig" as globalComments %}
-
-{% block head %}
-    {{ parent() }}
-
-    {{ globalComments.head("profile_comment_#{profile.username}") }}
-{% endblock %}
-
 {% block content %}
 <div class="container page ts-style">
     <div class="main-body">
@@ -79,7 +71,7 @@
                     </div>
                 </div>
 
-                {{ globalComments.body() }}
+                {{ include('common/comments.twig') }}
             </div>
         </div>
     </div>
