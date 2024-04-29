@@ -1,6 +1,5 @@
 import {defineConfig} from "vite";
 import {resolve} from "path";
-import vue from '@vitejs/plugin-vue';
 
 const inputs = {
     "layout": resolve(__dirname, "./frontend/layout.js"),
@@ -28,9 +27,6 @@ export default defineConfig({
             allow: ["."],
         },
     },
-    plugins: [
-        vue(),
-    ],
     resolve: {
         alias: {
             "!": resolve(__dirname),
