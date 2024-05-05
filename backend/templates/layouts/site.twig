@@ -10,15 +10,17 @@
 <body>
 {{ include("layouts/sections/nav.twig") }}
 
-<main id="main">
-    {% block content %}
+<div id="page-wrapper">
+    <main id="main">
+        {% block content %}
 
-    {% endblock %}
-</main>
+        {% endblock %}
+    </main>
 
-<footer id="footer" class="mt-3">
-    {{ include("layouts/sections/footer.twig") }}
-</footer>
+    <footer id="footer" class="mt-3">
+        {{ include("layouts/sections/footer.twig") }}
+    </footer>
+</div>
 
 {{ include("layouts/sections/notifications.twig") }}
 </body>

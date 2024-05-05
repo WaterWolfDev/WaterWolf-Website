@@ -55,6 +55,8 @@ COPY ./build/dev/services/ /etc/supervisor.d/
 COPY ./build/dev/Caddyfile /etc/Caddyfile
 COPY ./build/dev/entrypoint.sh /var/app/entrypoint.sh
 
+RUN apk add --no-cache shadow
+
 RUN chmod a+x /var/app/entrypoint.sh
 
 USER root

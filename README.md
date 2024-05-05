@@ -26,6 +26,8 @@ host OS to take advantage of this file, but all instructions are provided in bot
 
 Copy `dev.dist.env` to `dev.env` and update it with any missing secrets.
 
+Update `PUID` and `PGID` to your local user/group ID respectively (the values of `id -u` and `id -g`) to ensure permissions match correctly.
+
 The database will be created from the DB migrations (in `/db/migrations`) on initial startup.
 
 The following user accounts are created on local dev, all with the password `WaterWolf!`:
