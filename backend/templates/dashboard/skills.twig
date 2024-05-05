@@ -23,6 +23,40 @@
                 suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
                 suggestionBox.style.display = 'block';
             });
+
+            var communityTalents = {{ communityTalents|json_encode()|raw }};
+
+            function filterCommunitySkills(event) {
+                var filter = event.target.value.toUpperCase();
+                var container = document.getElementById('communityTalentsContainer');
+                container.innerHTML = '';
+
+                communityTalents.filter(function(talent) {
+                    return talent.skill.toUpperCase().includes(filter);
+                }).forEach(function(talent) {
+                    var col = document.createElement('div');
+                    col.className = 'col';
+                    col.innerHTML = `
+                        <div class="card" style="padding: 20px;background: #0f0f0f;">
+                            <h2>${talent.skill}</h2>
+                            ${talent.occurrences}
+                            Share This Skill.
+                            <br/><br/>
+
+                            <div class="float-right">
+                                <form method="POST">
+                                    <input type="hidden" name="delete_id" value="${talent.id}">
+                                    <button type="submit" class="btn btn-success btn-sm mt-2">Add Skill</button>
+                                </form>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(col);
+                });
+            }
+
+            document.querySelector('#searchCommunitySkills').addEventListener('load', filterCommunitySkills, false);
+            document.querySelector('#searchCommunitySkills').addEventListener('keyup', filterCommunitySkills, false);
         });
         function selectSuggestion(value) {
             document.getElementById("skill").value = value;
@@ -53,7 +87,7 @@
 					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#community-skills" type="button" role="tab" aria-controls="community-skills">Community Talent Pool
 					</button>
 				</li>
-				<li class="nav-item">
+				<li class="nav-item d-none">  <!-- Coming Soon -->
 					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#find-skills-tab" type="button" role="tab" aria-controls="find-skills-tab">Find Talent
 					</button>
 				</li>
@@ -66,9 +100,6 @@
 		</div>
 		<div class="card-body tab-content">
 			<div class="tab-pane fade active show" id="your-skills" role="tabpanel" aria-labelledby="your-skills-tab">
-				<input
-				class="form-control" id="email" name="email" type="text" placeholder="Search" value="">
-
 				<!-- Grid -->
 				<div class="row row-cols-2 g-2 mt-3">
 					{% for row in myTalents %}
@@ -80,8 +111,8 @@
 								<div class="float-right">
 									<form method="POST">
 										<input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
-										<button type="submit" class="btn btn-primary btn-sm mt-2">Find Talent</button>
-										<button type="submit" class="btn btn-danger btn-sm mt-2">Delete</button>
+										<button type="submit" class="btn btn-primary btn-sm mt-2 d-none">Find Talent</button> <!-- Coming Soon -->
+										<button type="submit" class="btn btn-danger btn-sm mt-2">Delete Skill</button>
 									</form>
 								</div>
 							</div>
@@ -91,10 +122,10 @@
 			</div>
 			<div class="tab-pane fade" id="community-skills" role="tabpanel" aria-labelledby="community-skills-tab">
 				<input
-				class="form-control" id="email" name="email" type="text" placeholder="Search" value="">
+				class="form-control" id="searchCommunitySkills" name="searchCommunitySkills" type="text" placeholder="Search" value="">
 
 				<!-- Grid -->
-				<div class="row row-cols-2 g-2 mt-3">
+				<div class="row row-cols-2 g-2 mt-3" id="communityTalentsContainer">
 					{% for row in communityTalents %}
 						<div class="col">
 							<div class="card" style="padding: 20px;background: #0f0f0f;">
@@ -104,17 +135,17 @@
 								<br/><br/>
 
 								<div class="float-right">
-									<form method="POST">
-										<input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
-										<button type="submit" class="btn btn-success btn-sm mt-2">Add Skill</button>
-									</form>
+                                    <form method="POST" class="form-group">
+                                        <input type="hidden" name="skill" value="{{ row.skill|e('html_attr') }}">
+                                        <input type="submit" name="add_fixture" value="Add Skill" class="btn btn-primary btn-sm">
+                                    </form>
 								</div>
 							</div>
 						</div>
 					{% endfor %}
 				</div>
 			</div>
-			<div class="tab-pane fade" id="find-skills-tab" role="tabpanel" aria-labelledby="find-skills-tab">
+			<div class="tab-pane fade" id="find-skills-tab" role="tabpanel" aria-labelledby="find-skills-tab">  <!-- Coming Soon -->
 				<input
 				class="form-control" id="email" name="email" type="text" placeholder="Search" value="">
 
