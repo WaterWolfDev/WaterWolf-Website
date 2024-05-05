@@ -3,36 +3,33 @@
 {% import "macros/breadcrumbs.twig" as breadcrumbs %}
 
 {% block head %}
-	{{ parent() }}
+    {{ parent() }}
 
-	<script>
-		const skillLookup = {{ skillLookup|json_encode|raw }};
-
-ready(() => {
-const rigNameInput = document.getElementById("skill");
-const suggestionBox = document.getElementById("suggestion-box");
-
-rigNameInput.addEventListener("input", async function () {
-const query = rigNameInput.value;
-if (query.length === 0) {
-suggestionBox.innerHTML = '';
-suggestionBox.style.display = 'none';
-return;
-}
-
-const suggestions = skillLookup.slice().filter((value) => value.includes(query));
-
-suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
-suggestionBox.style.display = 'block';
-});
-});
-
-function selectSuggestion(value) {
-document.getElementById("skill").value = value;
-document.getElementById("suggestion-box").innerHTML = '';
-document.getElementById("suggestion-box").style.display = 'none';
-}
-	</script>
+    <script>
+        const skillLookup = {{ skillLookup|json_encode|raw }};
+        ready(() => {
+            const rigNameInput = document.getElementById("skill");
+            const suggestionBox = document.getElementById("suggestion-box");
+            rigNameInput.addEventListener("input", async function () {
+                const query = rigNameInput.value;
+                if (query.length === 0) {
+                    suggestionBox.innerHTML = '';
+                    suggestionBox.style.display = 'none';
+                    return;
+                }
+                const suggestions = skillLookup.slice().filter(
+                        (value) => value.includes(query)
+                );
+                suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
+                suggestionBox.style.display = 'block';
+            });
+        });
+        function selectSuggestion(value) {
+            document.getElementById("skill").value = value;
+            document.getElementById("suggestion-box").innerHTML = '';
+            document.getElementById("suggestion-box").style.display = 'none';
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
