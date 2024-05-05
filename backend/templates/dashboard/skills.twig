@@ -25,6 +25,7 @@
             });
 
             var communityTalents = {{ communityTalents|json_encode()|raw }};
+            var myTalents = {{ myTalents|json_encode()|raw }};
 
             function filterCommunitySkills(event) {
                 var filter = event.target.value.toUpperCase();
@@ -55,6 +56,36 @@
                 });
             }
 
+            function filterMySkills(event) {
+                var filter = event.target.value.toUpperCase();
+                var container = document.getElementById('myTalentsContainer');
+                container.innerHTML = '';
+
+                myTalents.filter(function(talent) {
+                    return talent.skill.toUpperCase().includes(filter);
+                }).forEach(function(talent) {
+                    var col = document.createElement('div');
+                    col.className = 'col';
+                    col.innerHTML = `
+                        <div class="card" style="padding: 20px;background: #0f0f0f;">
+                            <h2>${talent.skill}</h2>
+                            <br/><br/>
+
+                            <div class="float-right">
+									<form method="POST">
+										<input type="hidden" name="delete_id" value="${talent.id}">
+										<button type="submit" class="btn btn-danger btn-sm mt-2">Delete Skill</button>
+									</form>
+							</div>
+                        </div>
+                    `;
+                    container.appendChild(col);
+                });
+            }
+
+            document.querySelector('#searchMySkills').addEventListener('load', filterMySkills, false);
+            document.querySelector('#searchMySkills').addEventListener('keyup', filterMySkills, false);
+
             document.querySelector('#searchCommunitySkills').addEventListener('load', filterCommunitySkills, false);
             document.querySelector('#searchCommunitySkills').addEventListener('keyup', filterCommunitySkills, false);
         });
@@ -76,6 +107,12 @@
 
 	<h1>My Skills</h1>
 
+    <div class="my-3">
+        <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#AddFixture">
+            Add New Skill
+        </button>
+    </div>
+
 	<div class="card">
 		<div class="card-header">
 			<ul class="nav nav-tabs card-header-tabs" role="tablist">
@@ -91,17 +128,15 @@
 					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#find-skills-tab" type="button" role="tab" aria-controls="find-skills-tab">Find Talent
 					</button>
 				</li>
-				<div class="ms-auto">
-					<button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#AddFixture">
-						Add New Skill
-					</button>
-				</div>
 			</ul>
 		</div>
 		<div class="card-body tab-content">
 			<div class="tab-pane fade active show" id="your-skills" role="tabpanel" aria-labelledby="your-skills-tab">
+            				<input
+				class="form-control" id="searchMySkills" name="searchMySkills" type="text" placeholder="Search" value="">
+
 				<!-- Grid -->
-				<div class="row row-cols-2 g-2 mt-3">
+				<div class="row row-cols-1 row-cols-md-2 g-2 mt-3" id="myTalentsContainer">
 					{% for row in myTalents %}
 						<div class="col">
 							<div class="card" style="padding: 20px;background: #0f0f0f;">
@@ -111,7 +146,6 @@
 								<div class="float-right">
 									<form method="POST">
 										<input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
-										<button type="submit" class="btn btn-primary btn-sm mt-2 d-none">Find Talent</button> <!-- Coming Soon -->
 										<button type="submit" class="btn btn-danger btn-sm mt-2">Delete Skill</button>
 									</form>
 								</div>
@@ -125,7 +159,7 @@
 				class="form-control" id="searchCommunitySkills" name="searchCommunitySkills" type="text" placeholder="Search" value="">
 
 				<!-- Grid -->
-				<div class="row row-cols-2 g-2 mt-3" id="communityTalentsContainer">
+				<div class="row row-cols-1 row-cols-md-2 g-2 mt-3" id="communityTalentsContainer">
 					{% for row in communityTalents %}
 						<div class="col">
 							<div class="card" style="padding: 20px;background: #0f0f0f;">
