@@ -22,14 +22,18 @@
             }
 
             function doFilter(filter, selector) {
-                $(selector).each(function() {
-                    const talentName = $(this).find('h2').first().text();
-                    if (!talentName.toUpperCase().includes(filter)) {
-                        $(this).addClass('d-none');
-                    } else {
-                        $(this).removeClass('d-none');
-                    }
-                });
+                if (filter === '') {
+                    $(selector).removeClass('d-none');
+                } else {
+                    $(selector).each(function() {
+                        const talentName = $(this).find('h2').first().text();
+                        if (!talentName.toUpperCase().includes(filter)) {
+                            $(this).addClass('d-none');
+                        } else {
+                            $(this).removeClass('d-none');
+                        }
+                    });
+                }
             }
 
             document.querySelector('#searchMySkills').addEventListener('load', filterMySkills, false);
