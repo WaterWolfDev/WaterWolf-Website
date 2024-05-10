@@ -10,29 +10,29 @@
 <body>
 {{ include("layouts/sections/nav.twig") }}
 
-<div class="d-flex flex-column flexbox-waterwolf"> 
 {{ include("layouts/sections/dashboard_sidebar.twig") }}
 
-<!-- Page Content  -->
-<main id="main" class="has-sidebar flex-grow-1">
-    <div class="container-fluid page">
-        <div class="d-block d-lg-none mb-3">
-            <button id="navbar-toggle" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
-                    aria-controls="sidebar" aria-expanded="false"
-                    class="btn btn-secondary">
-                Toggle Sidebar
-            </button>
+<div id="page-wrapper">
+    <!-- Page Content  -->
+    <main id="main" class="has-sidebar">
+        <div class="container-fluid page">
+            <div class="d-block d-lg-none mb-3">
+                <button id="navbar-toggle" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+                        aria-controls="sidebar" aria-expanded="false"
+                        class="btn btn-secondary">
+                    Toggle Sidebar
+                </button>
+            </div>
+
+            {% block content %}
+
+            {% endblock %}
         </div>
+    </main>
 
-        {% block content %}
-
-        {% endblock %}
-    </div>
-</main>
-
-<footer id="footer" class="has-sidebar mt-3">
-    {{ include("layouts/sections/footer.twig") }}
-</footer>
+    <footer id="footer" class="has-sidebar mt-3">
+        {{ include("layouts/sections/footer.twig") }}
+    </footer>
 </div>
 
 {{ include("layouts/sections/notifications.twig") }}

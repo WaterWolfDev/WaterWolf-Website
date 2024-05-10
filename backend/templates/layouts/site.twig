@@ -8,10 +8,10 @@
     {% endblock %}
 </head>
 <body>
-<div class="d-flex flex-column flexbox-waterwolf"> 
-    {{ include("layouts/sections/nav.twig") }}
+{{ include("layouts/sections/nav.twig") }}
 
-    <main id="main" class="flex-grow-1">
+<div id="page-wrapper">
+    <main id="main">
         {% block content %}
 
         {% endblock %}
