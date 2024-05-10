@@ -6,80 +6,29 @@
     {{ parent() }}
 
     <script>
-        const skillLookup = {{ skillLookup|json_encode|raw }};
         ready(() => {
-            const rigNameInput = document.getElementById("skill");
-            const suggestionBox = document.getElementById("suggestion-box");
-            rigNameInput.addEventListener("input", async function () {
-                const query = rigNameInput.value;
-                if (query.length === 0) {
-                    suggestionBox.innerHTML = '';
-                    suggestionBox.style.display = 'none';
-                    return;
-                }
-                const suggestions = skillLookup.slice().filter(
-                        (value) => value.includes(query)
-                );
-                suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
-                suggestionBox.style.display = 'block';
-            });
-
-            var communityTalents = {{ communityTalents|json_encode()|raw }};
-            var myTalents = {{ myTalents|json_encode()|raw }};
-
             function filterCommunitySkills(event) {
-                var filter = event.target.value.toUpperCase();
-                var container = document.getElementById('communityTalentsContainer');
-                container.innerHTML = '';
-
-                communityTalents.filter(function(talent) {
-                    return talent.skill.toUpperCase().includes(filter);
-                }).forEach(function(talent) {
-                    var col = document.createElement('div');
-                    col.className = 'col';
-                    col.innerHTML = `
-                        <div class="card" style="padding: 20px;background: #0f0f0f;">
-                            <h2>${talent.skill}</h2>
-                            ${talent.occurrences}
-                            Share This Skill.
-                            <br/><br/>
-
-                            <div class="float-right">
-                                <form method="POST">
-                                    <input type="hidden" name="delete_id" value="${talent.id}">
-                                    <button type="submit" class="btn btn-success btn-sm mt-2">Add Skill</button>
-                                </form>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(col);
-                });
+                doFilter(
+                    event.target.value.toUpperCase(),
+                    '.community-talent'
+                );
             }
 
             function filterMySkills(event) {
-                var filter = event.target.value.toUpperCase();
-                var container = document.getElementById('myTalentsContainer');
-                container.innerHTML = '';
+                doFilter(
+                    event.target.value.toUpperCase(),
+                    '.mytalents-talent'
+                );
+            }
 
-                myTalents.filter(function(talent) {
-                    return talent.skill.toUpperCase().includes(filter);
-                }).forEach(function(talent) {
-                    var col = document.createElement('div');
-                    col.className = 'col';
-                    col.innerHTML = `
-                        <div class="card" style="padding: 20px;background: #0f0f0f;">
-                            <h2>${talent.skill}</h2>
-                            <br/><br/>
-
-                            <div class="float-right">
-									<form method="POST">
-										<input type="hidden" name="delete_id" value="${talent.id}">
-										<button type="submit" class="btn btn-danger btn-sm mt-2">Delete Skill</button>
-									</form>
-							</div>
-                        </div>
-                    `;
-                    container.appendChild(col);
+            function doFilter(filter, selector) {
+                $(selector).each(function() {
+                    const talentName = $(this).find('h2').first().text();
+                    if (!talentName.toUpperCase().includes(filter)) {
+                        $(this).addClass('d-none');
+                    } else {
+                        $(this).removeClass('d-none');
+                    }
                 });
             }
 
@@ -89,11 +38,6 @@
             document.querySelector('#searchCommunitySkills').addEventListener('load', filterCommunitySkills, false);
             document.querySelector('#searchCommunitySkills').addEventListener('keyup', filterCommunitySkills, false);
         });
-        function selectSuggestion(value) {
-            document.getElementById("skill").value = value;
-            document.getElementById("suggestion-box").innerHTML = '';
-            document.getElementById("suggestion-box").style.display = 'none';
-        }
     </script>
 {% endblock %}
 
@@ -106,12 +50,6 @@
     ) }}
 
 	<h1>My Skills</h1>
-
-    <div class="my-3">
-        <button type="button" class="btn btn-primary mb-2" data-bs-toggle="modal" data-bs-target="#AddFixture">
-            Add New Skill
-        </button>
-    </div>
 
 	<div class="card">
 		<div class="card-header">
@@ -128,65 +66,67 @@
 					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#find-skills-tab" type="button" role="tab" aria-controls="find-skills-tab">Find Talent
 					</button>
 				</li>
+
+                <div class="ms-auto">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddFixture">
+                        Add New Skill
+                    </button>
+                </div>
 			</ul>
 		</div>
 		<div class="card-body tab-content">
 			<div class="tab-pane fade active show" id="your-skills" role="tabpanel" aria-labelledby="your-skills-tab">
-            				<input
-				class="form-control" id="searchMySkills" name="searchMySkills" type="text" placeholder="Search" value="">
+            	<input class="form-control" id="searchMySkills" name="searchMySkills" type="text"
+                       placeholder="Search" value="">
 
 				<!-- Grid -->
 				<div class="row row-cols-1 row-cols-md-2 g-2 mt-3" id="myTalentsContainer">
 					{% for row in myTalents %}
-						<div class="col">
-							<div class="card" style="padding: 20px;background: #0f0f0f;">
-								<h2>{{ row.skill }}</h2>
-								<br/><br/>
-
-								<div class="float-right">
-									<form method="POST">
-										<input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
-										<button type="submit" class="btn btn-danger btn-sm mt-2">Delete Skill</button>
-									</form>
-								</div>
+						<div class="col mytalents-talent">
+							<div class="card bg-dark p-3">
+                                <div class="d-flex align-items-center">
+                                    <h2 class="flex-fill m-0">{{ row.skill }}</h2>
+                                    <form class="flex-shrink-0" method="POST">
+                                        <input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" data-confirm-danger="Remove skill?">Delete Skill</button>
+                                    </form>
+                                </div>
 							</div>
 						</div>
 					{% endfor %}
 				</div>
 			</div>
 			<div class="tab-pane fade" id="community-skills" role="tabpanel" aria-labelledby="community-skills-tab">
-				<input
-				class="form-control" id="searchCommunitySkills" name="searchCommunitySkills" type="text" placeholder="Search" value="">
+				<input class="form-control" id="searchCommunitySkills" name="searchCommunitySkills" type="text"
+                       placeholder="Search" value="">
 
 				<!-- Grid -->
 				<div class="row row-cols-1 row-cols-md-2 g-2 mt-3" id="communityTalentsContainer">
 					{% for row in communityTalents %}
-						<div class="col">
-							<div class="card" style="padding: 20px;background: #0f0f0f;">
-								<h2>{{ row.skill }}</h2>
-								{{ row.occurrences }}
-								Share This Skill.
-								<br/><br/>
-
-								<div class="float-right">
-                                    <form method="POST" class="form-group">
+						<div class="col community-talent">
+							<div class="card bg-dark p-3">
+                                <div class="d-flex align-items-center">
+                                    <h2 class="flex-fill m-0">{{ row.skill }}</h2>
+                                    <form method="POST" class="flex-shrink-0">
                                         <input type="hidden" name="skill" value="{{ row.skill|e('html_attr') }}">
                                         <input type="submit" name="add_fixture" value="Add Skill" class="btn btn-success btn-sm">
                                     </form>
-								</div>
+                                </div>
+
+								{{ row.occurrences }}
+								Share This Skill.
 							</div>
 						</div>
 					{% endfor %}
 				</div>
 			</div>
 			<div class="tab-pane fade" id="find-skills-tab" role="tabpanel" aria-labelledby="find-skills-tab">  <!-- Coming Soon -->
-				<input
-				class="form-control" id="email" name="email" type="text" placeholder="Search" value="">
+				<input class="form-control" id="email" name="email" type="text" placeholder="Search" value="">
 
 				<!-- Grid -->
 				<div class="row row-cols-2 g-2 mt-3">
 					<div class="col">
-						<div class="card" style="padding: 20px;background: #0f0f0f;">
+						<div class="card bg-dark p-3">
 							<div
 								class="d-flex flex-row">
 								<!-- Added Bootstrap classes here -->
@@ -219,15 +159,21 @@
 				<div class="modal-body">
 					<form method="POST" class="form-group">
 						<label for="rig_name">Skill:</label>
-						<input type="text" name="skill" class="form-control" id="skill" autocomplete="off" required>
-						<div id="suggestion-box"></div>
+						<input type="text" name="skill" class="form-control" id="skill" autocomplete="off"
+                               list="available-skills" required>
+
+                        <datalist id="available-skills">
+                        {% for skill in skillLookup %}
+                            <option value="{{ skill|e('html_attr') }}"></option>
+                        {% endfor %}
+                        </datalist>
 
 						<div class="d-grid g-2">
 							<input type="submit" name="add_fixture" value="Add New Skill" class="btn btn-primary mt-3">
 						</div>
 
 						<small>Type out your skills. If Suggestions appear, use them! If none appear, you must have a
-																																																																													                            unique skill.</small>
+                            unique skill.</small>
 					</form>
 				</div>
 
