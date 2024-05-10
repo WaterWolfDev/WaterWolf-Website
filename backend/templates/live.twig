@@ -3,66 +3,36 @@
 {% block head %}
     {{ parent() }}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.13.0/video.min.js"
-            integrity="sha512-e8b+OnOdKNXYeEFhCuorZ/jKcNzOcg0QARMu30ViduYoM3fN2hw+42sA/ybIOCQarZo6WdT1SyAS3iPbeS1FDg=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.13.0/video-js.min.css"
-          integrity="sha512-TPVEYi8BA+0OcvvK2ZC/iCcwFSuRz+m1XoVGJb4PO/WnRQjPASwxJe9dSbEqLG/kIE2OI2MUgsqdjdqgIZ40yA=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
-
     <script src="https://embed.twitch.tv/embed/v1.js"></script>
 
     <script>
         ready(() => {
-            let twitchEmbed, html5Player;
-
-            startHtmlPlayer();
+            let twitchEmbed;
 
             $('[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var currentTab = $(e.target).data('bs-target'); // Get the current tab
 
                 if (currentTab === '#html5') {
-                    startHtmlPlayer();
+                    if (twitchEmbed) {
+                        twitchEmbed.pause();
+                    }
+                    
+                    $('#html5video')[0].play();
                 } else if (currentTab === '#twitch') {
-                    startTwitchPlayer();
+                    $('#html5video')[0].pause();
+
+                    if (twitchEmbed) {
+                        twitchEmbed.play();
+                    } else {
+                        twitchEmbed = new Twitch.Embed("twitch-embed", {
+                            width: "100%",
+                            height: 480,
+                            channel: "waterwolfvr",
+                            autoplay: true
+                        });
+                    }
                 }
             });
-
-            function startHtmlPlayer() {
-                if (twitchEmbed) {
-                    twitchEmbed.pause();
-                }
-
-                if (html5Player) {
-                    html5Player.play();
-                } else {
-                    html5Player = videojs('html5video', {
-                        liveui: true,
-                        responsive: true,
-                        restoreEl: true
-                    });
-                    html5Player.play();
-                }
-            }
-
-            function startTwitchPlayer() {
-                if (html5Player) {
-                    html5Player.dispose();
-                    html5Player = null;
-                }
-
-                if (twitchEmbed) {
-                    twitchEmbed.play();
-                } else {
-                    twitchEmbed = new Twitch.Embed("twitch-embed", {
-                        width: "100%",
-                        height: 480,
-                        channel: "waterwolfvr",
-                        autoplay: true
-                    });
-                }
-            }
         });
     </script>
 {% endblock %}
@@ -91,10 +61,9 @@
         <div class="tab-content card-body">
             <div id="html5" class="container tab-pane active">
                 <div class="ratio ratio-16x9">
-                    <video id="html5video" class="video-js" controls>
+                    <video id="html5video" controls autoplay>
                         <source src="//stream.vrcdn.live/live/waterwolf.live.mp4?t={{ date().getTimestamp() }}"
                                 type="video/mp4">
-                        Your browser does not support HTML5 video.
                     </video>
                 </div>
             </div>
