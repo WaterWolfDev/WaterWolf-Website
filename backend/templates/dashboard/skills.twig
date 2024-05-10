@@ -6,123 +6,186 @@
     {{ parent() }}
 
     <script>
-        const skillLookup = {{ skillLookup|json_encode|raw }};
-
         ready(() => {
-            const rigNameInput = document.getElementById("skill");
-            const suggestionBox = document.getElementById("suggestion-box");
-
-            rigNameInput.addEventListener("input", async function () {
-                const query = rigNameInput.value;
-                if (query.length === 0) {
-                    suggestionBox.innerHTML = '';
-                    suggestionBox.style.display = 'none';
-                    return;
-                }
-
-                const suggestions = skillLookup.slice().filter(
-                        (value) => value.includes(query)
+            function filterCommunitySkills(event) {
+                doFilter(
+                    event.target.value.toUpperCase(),
+                    '.community-talent'
                 );
+            }
 
-                suggestionBox.innerHTML = suggestions.map(s => `<div class="badge badge-pill badge-primary" onclick="selectSuggestion('${s}')">${s}</div>`).join('');
-                suggestionBox.style.display = 'block';
-            });
+            function filterMySkills(event) {
+                doFilter(
+                    event.target.value.toUpperCase(),
+                    '.mytalents-talent'
+                );
+            }
+
+            function doFilter(filter, selector) {
+                if (filter === '') {
+                    $(selector).removeClass('d-none');
+                } else {
+                    $(selector).each(function() {
+                        const talentName = $(this).find('h2').first().text();
+                        if (!talentName.toUpperCase().includes(filter)) {
+                            $(this).addClass('d-none');
+                        } else {
+                            $(this).removeClass('d-none');
+                        }
+                    });
+                }
+            }
+
+            document.querySelector('#searchMySkills').addEventListener('load', filterMySkills, false);
+            document.querySelector('#searchMySkills').addEventListener('keyup', filterMySkills, false);
+
+            document.querySelector('#searchCommunitySkills').addEventListener('load', filterCommunitySkills, false);
+            document.querySelector('#searchCommunitySkills').addEventListener('keyup', filterCommunitySkills, false);
         });
-
-        function selectSuggestion(value) {
-            document.getElementById("skill").value = value;
-            document.getElementById("suggestion-box").innerHTML = '';
-            document.getElementById("suggestion-box").style.display = 'none';
-        }
     </script>
 {% endblock %}
 
 {% block content %}
-    {{ breadcrumbs.body(
+	{{ breadcrumbs.body(
         {
             'dashboard': 'My Dashboard'
         },
         'My Skills'
     ) }}
 
-    <h1>My Skills</h1>
+	<h1>My Skills</h1>
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#AddFixture">
-        Add New Skill
-    </button>
+	<div class="card">
+		<div class="card-header">
+			<ul class="nav nav-tabs card-header-tabs" role="tablist">
+				<li class="nav-item">
+					<button class="nav-link active" data-bs-toggle="tab" data-bs-target="#your-skills" type="button" role="tab" aria-controls="home" aria-selected="true">Your Talent Pool
+					</button>
+				</li>
+				<li class="nav-item">
+					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#community-skills" type="button" role="tab" aria-controls="community-skills">Community Talent Pool
+					</button>
+				</li>
+				<li class="nav-item d-none">  <!-- Coming Soon -->
+					<button class="nav-link" data-bs-toggle="tab" data-bs-target="#find-skills-tab" type="button" role="tab" aria-controls="find-skills-tab">Find Talent
+					</button>
+				</li>
 
-    <!-- Modal -->
-    <div class="modal fade" id="AddFixture">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <!-- Modal Header -->
-                <div class="modal-header">
-                    <h4 class="modal-title">Add Skill</h4>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="ms-auto">
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#AddFixture">
+                        Add New Skill
+                    </button>
                 </div>
+			</ul>
+		</div>
+		<div class="card-body tab-content">
+			<div class="tab-pane fade active show" id="your-skills" role="tabpanel" aria-labelledby="your-skills-tab">
+            	<input class="form-control" id="searchMySkills" name="searchMySkills" type="text"
+                       placeholder="Search" value="">
 
-                <!-- Modal body -->
-                <div class="modal-body">
-                    <form method="POST" class="form-group">
-                        <label for="rig_name">Skill:</label>
-                        <input type="text" name="skill" class="form-control" id="skill" autocomplete="off" required>
-                        <div id="suggestion-box"></div>
+				<!-- Grid -->
+				<div class="row row-cols-1 row-cols-md-2 g-2 mt-3" id="myTalentsContainer">
+					{% for row in myTalents %}
+						<div class="col mytalents-talent">
+							<div class="card bg-dark p-3">
+                                <div class="d-flex align-items-center">
+                                    <h2 class="flex-fill m-0">{{ row.skill }}</h2>
+                                    <form class="flex-shrink-0" method="POST">
+                                        <input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" data-confirm-danger="Remove skill?">Delete Skill</button>
+                                    </form>
+                                </div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="tab-pane fade" id="community-skills" role="tabpanel" aria-labelledby="community-skills-tab">
+				<input class="form-control" id="searchCommunitySkills" name="searchCommunitySkills" type="text"
+                       placeholder="Search" value="">
 
-                        <div class="d-grid g-2">
-                            <input type="submit" name="add_fixture" value="Add New Skill" class="btn btn-primary mt-3">
-                        </div>
+				<!-- Grid -->
+				<div class="row row-cols-1 row-cols-md-2 g-2 mt-3" id="communityTalentsContainer">
+					{% for row in communityTalents %}
+						<div class="col community-talent">
+							<div class="card bg-dark p-3">
+                                <div class="d-flex align-items-center">
+                                    <h2 class="flex-fill m-0">{{ row.skill }}</h2>
+                                    <form method="POST" class="flex-shrink-0">
+                                        <input type="hidden" name="skill" value="{{ row.skill|e('html_attr') }}">
+                                        <input type="submit" name="add_fixture" value="Add Skill" class="btn btn-success btn-sm">
+                                    </form>
+                                </div>
 
-                        <small>Type out your skills. If Suggestions appear, use them! If none appear, you must have a
+								{{ row.occurrences }}
+								Share This Skill.
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="tab-pane fade" id="find-skills-tab" role="tabpanel" aria-labelledby="find-skills-tab">  <!-- Coming Soon -->
+				<input class="form-control" id="email" name="email" type="text" placeholder="Search" value="">
+
+				<!-- Grid -->
+				<div class="row row-cols-2 g-2 mt-3">
+					<div class="col">
+						<div class="card bg-dark p-3">
+							<div
+								class="d-flex flex-row">
+								<!-- Added Bootstrap classes here -->
+								<img src="http://localhost:8080/static/img/avatar.webp" alt="avatar" style="width: 100px;height: 100px;margin-right:20px;">
+								<div>
+									<h2>username</h2>
+                                    user.name shares this skill.
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal -->
+	<div class="modal fade" id="AddFixture">
+		<div class="modal-dialog">
+			<div
+				class="modal-content">
+
+				<!-- Modal Header -->
+				<div class="modal-header">
+					<h4 class="modal-title">Add Skill</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+
+				<!-- Modal body -->
+				<div class="modal-body">
+					<form method="POST" class="form-group">
+						<label for="rig_name">Skill:</label>
+						<input type="text" name="skill" class="form-control" id="skill" autocomplete="off"
+                               list="available-skills" required>
+
+                        <datalist id="available-skills">
+                        {% for skill in skillLookup %}
+                            <option value="{{ skill|e('html_attr') }}"></option>
+                        {% endfor %}
+                        </datalist>
+
+						<div class="d-grid g-2">
+							<input type="submit" name="add_fixture" value="Add New Skill" class="btn btn-primary mt-3">
+						</div>
+
+						<small>Type out your skills. If Suggestions appear, use them! If none appear, you must have a
                             unique skill.</small>
-                    </form>
-                </div>
+					</form>
+				</div>
 
-                <!-- Modal footer -->
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col-4">
-            <h2>Your Talent Pool</h2>
-
-            {% for row in myTalents %}
-            <div class="alert alert-success fade show" role="alert">
-                <strong>{{ row.skill }}</strong>
-
-                <div class="float-right">
-                    <form method="POST">
-                        <input type="hidden" name="delete_id" value="{{ row.id|e('html_attr') }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        <div class="col-8">
-            <h2>Community Talent Pool</h2>
-
-            {% for row in communityTalents %}
-                <div class="alert alert-primary fade show" role="alert">
-                    <strong>{{ row.skill }}</strong>
-                    {{ row.occurrences }} Share This Skill.
-
-                    <div class="float-right">
-                        <form method="POST" class="form-group">
-                            <input type="hidden" name="skill" value="{{ row.skill|e('html_attr') }}">
-                            <input type="submit" name="add_fixture" value="Add Skill" class="btn btn-primary btn-sm">
-                        </form>
-                    </div>
-                </div>
-            {% else %}
-                No Results
-            {% endfor %}
-        </div>
-    </div>
+				<!-- Modal footer -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock %}
