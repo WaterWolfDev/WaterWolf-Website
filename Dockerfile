@@ -1,7 +1,7 @@
 #
 # Base build (common steps)
 #
-FROM php:8.3-fpm-alpine3.19 AS base
+FROM php:8.3-fpm-alpine3.20 AS base
 
 ENV TZ=UTC
 
@@ -42,10 +42,6 @@ VOLUME ["/var/app/media"]
 
 EXPOSE 8080
 
-WORKDIR /var/app/www
-
-COPY --chown=app:app . .
-
 #
 # Development Build
 #
@@ -53,13 +49,13 @@ FROM base AS development
 
 COPY ./build/dev/services/ /etc/supervisor.d/
 COPY ./build/dev/Caddyfile /etc/Caddyfile
+
 COPY ./build/dev/entrypoint.sh /var/app/entrypoint.sh
+RUN chmod a+x /var/app/entrypoint.sh
 
 RUN apk add --no-cache shadow
 
-RUN chmod a+x /var/app/entrypoint.sh
-
-USER root
+WORKDIR /var/app/www
 
 ENV APPLICATION_ENV=development
 
@@ -74,9 +70,11 @@ FROM base AS testing
 COPY ./build/testing/entrypoint.sh /var/app/entrypoint.sh
 RUN chmod a+x /var/app/entrypoint.sh
 
-USER root
-
 ENV APPLICATION_ENV=testing
+
+WORKDIR /var/app/www
+
+COPY --chown=app:app . .
 
 ENTRYPOINT ["/var/app/entrypoint.sh"]
 CMD ["app_ci"]
@@ -92,6 +90,10 @@ COPY ./build/prod/entrypoint.sh /var/app/entrypoint.sh
 RUN chmod a+x /var/app/entrypoint.sh
 
 USER app
+
+WORKDIR /var/app/www
+
+COPY --chown=app:app . .
 
 RUN composer install --no-dev --no-ansi --no-autoloader --no-interaction \
     && composer dump-autoload --optimize --classmap-authoritative \
