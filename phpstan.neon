@@ -14,4 +14,5 @@ parameters:
         - GLOBAL_SITECODE
         - GLOBAL_URI_WITHOUT_QUERY
 
-    checkMissingIterableValueType: false
+    ignoreErrors:
+        - identifier: missingType.iterableValue
